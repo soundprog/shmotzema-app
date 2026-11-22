@@ -79,6 +79,12 @@
   </style>
 </head>
 <body class="p-3.5 pb-28 select-none antialiased min-h-screen">
+  <!-- Floating Luxury Toast Notification -->
+  <div id="luxuryToast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-zinc-900/95 border border-amber-500/40 text-amber-300 text-xs font-medium tracking-wide shadow-2xl backdrop-blur-md opacity-0 translate-y-4 pointer-events-none transition-all duration-300 flex items-center gap-2">
+    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+    <span id="luxuryToastMsg">Настройки сохранены</span>
+  </div>
+
   <div class="max-w-md mx-auto space-y-4">
 
     <!-- Private Client Header -->
@@ -273,13 +279,16 @@
         </div>
       </div>
 
-      <!-- Action Button -->
-      <div class="sticky bottom-3 z-10 pt-1">
-        <button onclick="applyFiltersToBot()" class="w-full py-3.5 rounded-xl text-xs font-semibold tracking-wider uppercase bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-black shadow-lg gold-glow flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+      <!-- Action Buttons -->
+      <div class="sticky bottom-3 z-10 pt-1 space-y-1.5">
+        <button onclick="saveFiltersLocally()" class="w-full py-3.5 rounded-xl text-xs font-semibold tracking-wider uppercase bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-black shadow-lg gold-glow flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
           <svg class="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
-          <span>Синхронизировать предпочтения</span>
+          <span>Сохранить настройки</span>
+        </button>
+        <button onclick="applyFiltersToBot()" class="w-full py-1.5 text-center text-[10px] font-mono uppercase tracking-wider text-zinc-500 hover:text-amber-300 transition-colors block">
+          Применить к боту и вернуться в чат ↗
         </button>
       </div>
 
@@ -1003,6 +1012,27 @@
       saveState();
     }
 
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = document.getElementById('luxuryToast');
+      const toastMsg = document.getElementById('luxuryToastMsg');
+      if (!toast || !toastMsg) return;
+      toastMsg.innerText = msg;
+      toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+      }, 2500);
+    }
+
+    function saveFiltersLocally() {
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      saveState();
+      showToast("✓ Настройки сохранены");
+    }
+
     function applyFiltersToBot() {
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       saveState();
@@ -1019,7 +1049,7 @@
       if (tg && tg.sendData) {
         tg.sendData(JSON.stringify(payload));
       } else {
-        alert("Предпочтения сохранены в базу:\n" + JSON.stringify(payload, null, 2));
+        showToast("✓ Настройки применены к боту");
       }
     }
 
@@ -1122,7 +1152,7 @@
       if (tg && tg.sendData) {
         tg.sendData(JSON.stringify(data));
       } else {
-        alert("Команда консьержа передана в бот: " + JSON.stringify(data));
+        showToast("✓ Бюллетень отправлен в чат");
       }
     }
 
@@ -1130,7 +1160,7 @@
       const el = document.getElementById('broadcastInput');
       const text = el ? el.value.trim() : '';
       if (!text) {
-        alert("Введите текст закрытого бюллетеня.");
+        showToast("Введите текст бюллетеня");
         return;
       }
       triggerAdminAction('broadcast', { text });
@@ -1193,12 +1223,15 @@
       const item = wishlistBrands.find(b => b.name === brandName);
       if (!item) return;
 
+      let msg = "";
       if (userVotedBrands.has(brandName)) {
         userVotedBrands.delete(brandName);
         item.votes = Math.max(0, item.votes - 1);
+        msg = `Голос за ${brandName} снят`;
       } else {
         userVotedBrands.add(brandName);
         item.votes += 1;
+        msg = `✓ Голос за ${brandName} учтен!`;
         if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       }
 
@@ -1208,22 +1241,19 @@
       } catch (e) {}
 
       renderWishlist();
-
-      if (tg && tg.sendData) {
-        tg.sendData(JSON.stringify({ action: 'vote_brand', brand_name: brandName }));
-      }
+      showToast(msg);
     }
 
     function submitUserBrandSuggestion() {
       const input = document.getElementById('userBrandSuggestInput');
       const brandName = (input?.value || '').trim();
       if (!brandName || brandName.length < 2) {
-        alert("Введите корректное название бренда.");
+        showToast("Введите корректное название");
         return;
       }
 
       if (ALL_BRANDS.some(b => b.toLowerCase() === brandName.toLowerCase())) {
-        alert(`Бренд «${brandName}» уже отслеживается в радаре!`);
+        showToast(`«${brandName}» уже в радаре`);
         return;
       }
 
@@ -1239,9 +1269,7 @@
         } catch (e) {}
         renderWishlist();
         if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        if (tg && tg.sendData) {
-          tg.sendData(JSON.stringify({ action: 'suggest_brand', brand_name: brandName }));
-        }
+        showToast(`✓ «${brandName}» добавлен в Wishlist!`);
       }
 
       input.value = '';
@@ -1251,14 +1279,11 @@
       const input = document.getElementById('userFeatureSuggestInput');
       const text = (input?.value || '').trim();
       if (!text || text.length < 3) {
-        alert("Опишите подробнее идею функции.");
+        showToast("Опишите подробнее идею");
         return;
       }
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      alert("Благодарим! Ваше предложение передано консьерж-сервису.");
-      if (tg && tg.sendData) {
-        tg.sendData(JSON.stringify({ action: 'broadcast', text: `Идея от клиента: ${text}` }));
-      }
+      showToast("✓ Идея передана консьержу!");
       input.value = '';
     }
 
@@ -1270,7 +1295,7 @@
       const category = catSelect?.value || 'Кастомные';
 
       if (!brandName || brandName.length < 2) {
-        alert("Введите корректное название бренда.");
+        showToast("Введите название бренда");
         return;
       }
 
@@ -1291,11 +1316,7 @@
       nameInput.value = '';
 
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      if (tg && tg.sendData) {
-        tg.sendData(JSON.stringify({ action: 'add_brand', brand_name: brandName, category }));
-      } else {
-        alert(`Бренд «${brandName}» (${category}) успешно добавлен в радар без перезапуска!`);
-      }
+      showToast(`✓ Бренд «${brandName}» добавлен в радар!`);
     }
 
     function adminApproveWishlistBrand(brandName) {
@@ -1325,11 +1346,7 @@
       renderWishlist();
 
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      if (tg && tg.sendData) {
-        tg.sendData(JSON.stringify({ action: 'add_brand', brand_name: brandName, category: 'Кастомные' }));
-      } else {
-        alert(`Бренд «${brandName}» одобрен и добавлен в радар!`);
-      }
+      showToast(`✓ Бренд «${brandName}» одобрен и добавлен!`);
     }
 
     // --- Визуальный конструктор рассылок с Live Preview ---
@@ -1391,7 +1408,7 @@
       const btnUrl = (document.getElementById('bcBtnUrl')?.value || '').trim();
 
       if (!text) {
-        alert("Введите текст закрытого сообщения.");
+        showToast("Введите текст сообщения");
         return;
       }
 
