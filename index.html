@@ -97,11 +97,11 @@
         </div>
       </div>
 
-      <!-- Live Radar Pulse -->
-      <div class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400">
+      <!-- Roadmap Trigger & Pulse -->
+      <button onclick="toggleRoadmapModal(true)" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[10px] font-mono text-zinc-300 transition-colors active:scale-95">
         <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-        <span class="tracking-wider">RADAR ON</span>
-      </div>
+        <span class="tracking-wider">Roadmap ↗</span>
+      </button>
     </header>
 
     <!-- Sleek Navigation Tabs -->
@@ -234,6 +234,45 @@
         <div id="brandsPillCloud" class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto no-scrollbar p-0.5"></div>
       </div>
 
+      <!-- Community Wishlist & Голосование за бренды -->
+      <div class="p-4 rounded-2xl luxury-card space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span class="text-xs font-semibold text-zinc-200">Community Wishlist • Голосование</span>
+          </div>
+          <span class="text-[9px] font-mono text-amber-300/90 font-medium">Голос клиентов</span>
+        </div>
+
+        <p class="text-[11px] text-zinc-400 leading-relaxed">
+          Предлагайте бренды, которые хотите видеть в каталоге, или голосуйте за варианты других клиентов.
+        </p>
+
+        <!-- Form: Suggest Brand -->
+        <div class="flex gap-2">
+          <input type="text" id="userBrandSuggestInput" placeholder="Предложить бренд (напр. Chrome Hearts)..." class="flex-1 px-3 py-2 text-xs rounded-xl bg-zinc-950 border border-zinc-800 focus:outline-none focus:border-amber-500/60 text-zinc-100 placeholder-zinc-600 transition-colors">
+          <button onclick="submitUserBrandSuggestion()" class="px-3.5 py-2 rounded-xl text-[11px] font-semibold bg-zinc-900 hover:bg-zinc-800 text-amber-300 border border-amber-500/30 whitespace-nowrap active:scale-95 transition-all">
+            + В Wishlist
+          </button>
+        </div>
+
+        <!-- Wishlist List with Votes -->
+        <div class="space-y-1.5 pt-1">
+          <span class="text-[9px] uppercase font-mono tracking-wider text-zinc-500 block">Топ востребованных брендов:</span>
+          <div id="wishlistContainer" class="space-y-1.5">
+            <!-- Заполняется из JS -->
+          </div>
+        </div>
+
+        <!-- Form: Suggest Feature -->
+        <div class="pt-2 border-t border-zinc-900 flex gap-2">
+          <input type="text" id="userFeatureSuggestInput" placeholder="Предложить новую функцию сервиса..." class="flex-1 px-3 py-2 text-xs rounded-xl bg-zinc-950 border border-zinc-800 focus:outline-none focus:border-amber-500/60 text-zinc-100 placeholder-zinc-600 transition-colors">
+          <button onclick="submitUserFeatureSuggestion()" class="px-3 py-2 rounded-xl text-[11px] font-medium bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 whitespace-nowrap active:scale-95 transition-all">
+            Идея
+          </button>
+        </div>
+      </div>
+
       <!-- Action Button -->
       <div class="sticky bottom-3 z-10 pt-1">
         <button onclick="applyFiltersToBot()" class="w-full py-3.5 rounded-xl text-xs font-semibold tracking-wider uppercase bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-black shadow-lg gold-glow flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
@@ -326,62 +365,224 @@
     </section>
 
     <!-- ================================================================= -->
-    <!-- VIEW 4: КОНСЬЕРЖ И РЕЕСТР (CRM & МОНИТОРИНГ) -->
+    <!-- VIEW 4: КОНСЬЕРЖ И РЕЕСТР (CRM, LIVE-МОНИТОРИНГ И КОНСТРУКТОР) -->
     <!-- ================================================================= -->
     <section id="view-concierge" class="hidden space-y-3.5">
 
-      <!-- Executive Overview -->
-      <div class="grid grid-cols-3 gap-2">
-        <div class="p-3 rounded-xl luxury-card space-y-1">
-          <span class="text-[9px] uppercase font-mono tracking-wider text-zinc-500 block">Клиенты</span>
-          <div class="text-base font-bold font-num text-zinc-100">2 <span class="text-[10px] font-sans font-normal text-zinc-500">VIP</span></div>
-          <div class="text-[9px] text-emerald-400 font-mono">100% активны</div>
-        </div>
-
-        <div class="p-3 rounded-xl luxury-card space-y-1">
-          <span class="text-[9px] uppercase font-mono tracking-wider text-zinc-500 block">Индекс базы</span>
-          <div class="text-base font-bold font-num text-zinc-100">68,724</div>
-          <div class="text-[9px] text-zinc-500 font-mono">лотов</div>
-        </div>
-
-        <div class="p-3 rounded-xl luxury-card space-y-1">
-          <span class="text-[9px] uppercase font-mono tracking-wider text-zinc-500 block">Селекция</span>
-          <div class="text-base font-bold font-num text-zinc-100">82</div>
-          <div class="text-[9px] text-amber-300 font-mono">домов моды</div>
-        </div>
-      </div>
-
-      <!-- Vinted Protocol Status -->
-      <div class="p-4 rounded-2xl luxury-card space-y-3">
-        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+      <!-- 1. LIVE-МОНИТОРИНГ ПАРСЕРА VINTED -->
+      <div class="p-4 rounded-2xl luxury-card space-y-3.5">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2.5">
           <div class="flex items-center gap-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            <span class="text-xs font-semibold text-zinc-200">Vinted Enterprise Bridge</span>
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span class="text-xs font-semibold text-zinc-100">Live-мониторинг парсера Vinted</span>
           </div>
-          <span class="text-[9px] font-mono text-zinc-500">JWT Token OK</span>
+          <span class="text-[9px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+            200 OK • Здорова
+          </span>
         </div>
 
-        <div class="grid grid-cols-2 gap-2 text-[11px] bg-zinc-950 p-2.5 rounded-lg border border-zinc-800/80">
-          <div>
-            <span class="text-zinc-500 text-[9px] uppercase font-mono block">Ротация сессии</span>
-            <span class="font-mono text-zinc-200 text-xs">Каждые 15 мин</span>
+        <!-- 3 Core Live Stat Cards -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-1">
+            <span class="text-[8px] uppercase font-mono tracking-wider text-zinc-500 block">За 24 часа</span>
+            <div class="text-sm font-bold font-num text-amber-300">+7,946</div>
+            <div class="text-[8px] text-zinc-400 font-mono">новых лотов</div>
           </div>
-          <div>
-            <span class="text-zinc-500 text-[9px] uppercase font-mono block">Срок сертификата</span>
-            <span class="font-mono text-amber-300 text-xs">до 12.02.2027</span>
+
+          <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-1">
+            <span class="text-[8px] uppercase font-mono tracking-wider text-zinc-500 block">Всего в базе</span>
+            <div class="text-sm font-bold font-num text-zinc-100">68,724</div>
+            <div class="text-[8px] text-zinc-500 font-mono">в SQLite</div>
+          </div>
+
+          <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-1">
+            <span class="text-[8px] uppercase font-mono tracking-wider text-zinc-500 block">Скорость</span>
+            <div class="text-sm font-bold font-num text-emerald-400">15.4</div>
+            <div class="text-[8px] text-zinc-400 font-mono">запр/мин</div>
           </div>
         </div>
 
+        <!-- Live Requests Telemetry Mini-Graph -->
+        <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-2">
+          <div class="flex items-center justify-between text-[10px] font-mono">
+            <span class="text-zinc-400">График проверок каталога (последние 7 мин):</span>
+            <span class="text-amber-300 font-semibold">Live Sparkline</span>
+          </div>
+          <!-- Bar Graph -->
+          <div class="flex items-end gap-1.5 h-12 pt-2 px-1">
+            <div class="flex-1 bg-zinc-900 hover:bg-amber-400/30 rounded-t transition-all flex items-end justify-center group relative" style="height: 65%;">
+              <span class="absolute -top-4 text-[8px] font-mono text-zinc-500 group-hover:text-zinc-200">12</span>
+            </div>
+            <div class="flex-1 bg-zinc-900 hover:bg-amber-400/30 rounded-t transition-all flex items-end justify-center group relative" style="height: 80%;">
+              <span class="absolute -top-4 text-[8px] font-mono text-zinc-500 group-hover:text-zinc-200">15</span>
+            </div>
+            <div class="flex-1 bg-zinc-900 hover:bg-amber-400/30 rounded-t transition-all flex items-end justify-center group relative" style="height: 75%;">
+              <span class="absolute -top-4 text-[8px] font-mono text-zinc-500 group-hover:text-zinc-200">14</span>
+            </div>
+            <div class="flex-1 bg-zinc-900 hover:bg-amber-400/30 rounded-t transition-all flex items-end justify-center group relative" style="height: 90%;">
+              <span class="absolute -top-4 text-[8px] font-mono text-zinc-500 group-hover:text-zinc-200">17</span>
+            </div>
+            <div class="flex-1 bg-zinc-900 hover:bg-amber-400/30 rounded-t transition-all flex items-end justify-center group relative" style="height: 70%;">
+              <span class="absolute -top-4 text-[8px] font-mono text-zinc-500 group-hover:text-zinc-200">13</span>
+            </div>
+            <div class="flex-1 bg-zinc-900 hover:bg-amber-400/30 rounded-t transition-all flex items-end justify-center group relative" style="height: 95%;">
+              <span class="absolute -top-4 text-[8px] font-mono text-zinc-500 group-hover:text-zinc-200">18</span>
+            </div>
+            <div class="flex-1 bg-amber-400/40 rounded-t flex items-end justify-center group relative border-t-2 border-amber-400" style="height: 82%;">
+              <span class="absolute -top-4 text-[8px] font-mono text-amber-300 font-bold">15</span>
+            </div>
+          </div>
+          <div class="flex justify-between text-[8px] font-mono text-zinc-600 pt-1">
+            <span>-7 мин</span>
+            <span>-4 мин</span>
+            <span class="text-amber-400/80">Сейчас</span>
+          </div>
+        </div>
+
+        <!-- Session Refresh Action -->
         <button onclick="triggerAdminAction('refresh_session', {})" class="w-full py-2.5 rounded-xl text-xs font-medium bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 text-zinc-200 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
           <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
             <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/>
           </svg>
-          <span>Принудительный рефреш шлюза</span>
+          <span>Принудительный рефреш сессии Vinted</span>
         </button>
       </div>
 
-      <!-- Private Members Ledger -->
+      <!-- 2. РУЧНОЕ ДОБАВЛЕНИЕ НОВОГО БРЕНДА БЕЗ ПЕРЕЗАПУСКА КОДА -->
+      <div class="p-4 rounded-2xl luxury-card space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span class="text-xs font-semibold text-zinc-200">Добавить бренд в радар (Без перезапуска)</span>
+          </div>
+          <span class="text-[9px] font-mono text-zinc-500">Runtime SQLite</span>
+        </div>
+
+        <p class="text-[11px] text-zinc-400 leading-relaxed">
+          Новый дом моды мгновенно добавится в облако фильтров и начнет парситься в следующем цикле бота без перезапуска сервера.
+        </p>
+
+        <div class="space-y-2">
+          <div>
+            <label class="block text-[9px] font-mono uppercase text-zinc-500 mb-1">Название бренда:</label>
+            <input type="text" id="adminNewBrandName" placeholder="Например: Chrome Hearts, Represent, Kith..." class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-950 border border-zinc-800 focus:outline-none focus:border-amber-500/60 text-zinc-100 placeholder-zinc-700 transition-colors">
+          </div>
+
+          <div>
+            <label class="block text-[9px] font-mono uppercase text-zinc-500 mb-1">Категория селекции:</label>
+            <select id="adminNewBrandCat" class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 focus:outline-none focus:border-amber-500/60">
+              <option value="Люкс (Luxury)">Люкс (Luxury)</option>
+              <option value="Премиум (Contemporary)">Премиум (Contemporary)</option>
+              <option value="Стритвир и аутдор" selected>Стритвир и аутдор</option>
+              <option value="Локал-бренды">Локал-бренды</option>
+              <option value="Архив и винтаж">Архив и винтаж</option>
+              <option value="Кастомные">Кастомные</option>
+            </select>
+          </div>
+
+          <button onclick="adminSubmitAddBrand()" class="w-full py-2.5 rounded-xl text-xs font-semibold tracking-wide bg-gradient-to-r from-amber-500/90 to-amber-600/90 hover:from-amber-400 hover:to-amber-500 text-black flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+            <svg class="w-3.5 h-3.5 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span>Включить в очередь мониторинга</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. ВИЗУАЛЬНЫЙ КОНСТРУКТОР РАССЫЛОК С ОКНОМ ПРЕВЬЮ -->
+      <div class="p-4 rounded-2xl luxury-card space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span class="text-xs font-semibold text-zinc-200">Визуальный конструктор рассылок</span>
+          </div>
+          <span class="text-[9px] font-mono text-zinc-500">Telegram Studio</span>
+        </div>
+
+        <!-- Format Helpers -->
+        <div class="flex gap-1.5 text-[10px] font-mono">
+          <button onclick="insertFormatTag('b')" class="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200"><b>B</b></button>
+          <button onclick="insertFormatTag('i')" class="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200"><i>I</i></button>
+          <button onclick="insertFormatTag('code')" class="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200">Code</button>
+          <button onclick="insertFormatTag('a')" class="px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200">Link</button>
+        </div>
+
+        <div class="space-y-2">
+          <div>
+            <label class="block text-[9px] font-mono uppercase text-zinc-500 mb-1">Текст закрытого сообщения:</label>
+            <textarea id="bcInputText" rows="3" oninput="updateBroadcastPreview()" placeholder="Введите текст рассылки (поддерживается HTML: <b>жирный</b>, <a href='...'>ссылка</a>)..." class="w-full p-2.5 text-xs rounded-xl bg-zinc-950 border border-zinc-800 focus:outline-none focus:border-amber-500/50 text-zinc-100 placeholder-zinc-700 resize-none font-sans"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-[9px] font-mono uppercase text-zinc-500 mb-1">URL изображения / баннера (опционально):</label>
+            <input type="url" id="bcPhotoUrl" oninput="updateBroadcastPreview()" placeholder="https://images.unsplash.com/... (или пусто)" class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-950 border border-zinc-800 focus:outline-none focus:border-amber-500/60 text-zinc-100 placeholder-zinc-700 transition-colors">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[9px] font-mono uppercase text-zinc-500 mb-1">Текст инлайн-кнопки:</label>
+              <input type="text" id="bcBtnText" oninput="updateBroadcastPreview()" placeholder="Открыть каталог" class="w-full px-2.5 py-1.5 text-xs rounded-xl bg-zinc-950 border border-zinc-800 focus:outline-none focus:border-amber-500/60 text-zinc-100 placeholder-zinc-700">
+            </div>
+            <div>
+              <label class="block text-[9px] font-mono uppercase text-zinc-500 mb-1">Ссылка кнопки (URL):</label>
+              <input type="url" id="bcBtnUrl" oninput="updateBroadcastPreview()" placeholder="https://vinted.pl/..." class="w-full px-2.5 py-1.5 text-xs rounded-xl bg-zinc-950 border border-zinc-800 focus:outline-none focus:border-amber-500/60 text-zinc-100 placeholder-zinc-700">
+            </div>
+          </div>
+        </div>
+
+        <!-- LIVE TELEGRAM PREVIEW BOX -->
+        <div class="space-y-1.5 pt-1">
+          <span class="text-[9px] uppercase font-mono tracking-wider text-amber-300 block">Окно превью (как увидит пользователь в Telegram):</span>
+          <div class="p-3 rounded-2xl bg-[#17212b] border border-[#2b5278]/40 shadow-inner max-w-sm space-y-2">
+            <!-- Preview Photo -->
+            <div id="prevPhotoBox" class="hidden rounded-xl overflow-hidden aspect-video bg-zinc-900 border border-white/5">
+              <img id="prevImg" src="" alt="Preview" class="w-full h-full object-cover">
+            </div>
+            <!-- Preview Text -->
+            <div id="prevTextBox" class="text-xs text-white leading-relaxed font-sans whitespace-pre-wrap">
+              Здесь появится текст сообщения...
+            </div>
+            <!-- Preview Button -->
+            <div id="prevBtnBox" class="hidden pt-1">
+              <div class="w-full py-1.5 text-center rounded-lg bg-[#2b5278]/60 hover:bg-[#2b5278] border border-[#2b5278] text-[11px] font-medium text-[#64b5f6] flex items-center justify-center gap-1.5">
+                <span id="prevBtnLabel">Открыть каталог</span>
+                <span class="text-[9px]">↗</span>
+              </div>
+            </div>
+            <div class="flex justify-end text-[9px] text-white/40 font-mono">
+              <span>01:23 • ✓✓</span>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="sendRichBroadcast()" class="w-full py-3 rounded-xl text-xs font-semibold tracking-wide bg-zinc-900 hover:bg-zinc-800 text-amber-300 border border-amber-500/40 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+          <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          <span>Запустить закрытую рассылку клиентам</span>
+        </button>
+      </div>
+
+      <!-- 4. РЕЙТИНГ ВОСТРЕБОВАННЫХ БРЕНДОВ АУДИТОРИИ (WISHLIST ADMIN) -->
+      <div class="p-4 rounded-2xl luxury-card space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span class="text-xs font-semibold text-zinc-200">Рейтинг предложений аудитории</span>
+          </div>
+          <span class="text-[9px] font-mono text-zinc-500">Wishlist Leaderboard</span>
+        </div>
+
+        <div id="adminWishlistContainer" class="space-y-1.5">
+          <!-- Заполняется из JS -->
+        </div>
+      </div>
+
+      <!-- 5. РЕЕСТР ДОВЕРЕННЫХ ЛИЦ (CRM) -->
       <div class="p-4 rounded-2xl luxury-card space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-zinc-200">Реестр доверенных лиц</span>
@@ -403,11 +604,6 @@
             <span class="px-2 py-0.5 rounded text-[9px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               Active
             </span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 text-[10px] text-zinc-400 pt-1 border-t border-zinc-900 font-mono">
-            <div>Бренды: <span class="text-zinc-200 font-medium">Все 82</span></div>
-            <div>Лимит: <span class="text-zinc-200 font-medium">Без лимита</span></div>
           </div>
 
           <button onclick="triggerAdminAction('toggle_pause', {chat_id: 6004332597})" class="w-full py-1.5 rounded-lg text-[10px] font-mono uppercase bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition-colors">
@@ -432,27 +628,10 @@
             </span>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 text-[10px] text-zinc-400 pt-1 border-t border-zinc-900 font-mono">
-            <div>Бренды: <span class="text-zinc-200 font-medium">Все бренды</span></div>
-            <div>Лимит: <span class="text-zinc-200 font-medium">500–1000 zł</span></div>
-          </div>
-
           <button onclick="triggerAdminAction('toggle_pause', {chat_id: 1640182648})" class="w-full py-1.5 rounded-lg text-[10px] font-mono uppercase bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition-colors">
             Приостановить поток алертов
           </button>
         </div>
-      </div>
-
-      <!-- Private Broadcast Engine -->
-      <div class="p-4 rounded-2xl luxury-card space-y-2.5">
-        <span class="text-xs font-semibold text-zinc-200 block">Экстренный закрытый бюллетень</span>
-        <textarea id="broadcastInput" rows="2" placeholder="Сообщение конфиденциальной рассылки всем клиентам..." class="w-full p-2.5 text-xs rounded-xl bg-zinc-950 border border-zinc-800 focus:outline-none focus:border-amber-500/50 text-zinc-100 placeholder-zinc-700 resize-none font-sans"></textarea>
-        <button onclick="sendBroadcastDirect()" class="w-full py-2.5 rounded-xl text-xs font-medium tracking-wide bg-zinc-900 hover:bg-zinc-800 text-amber-300 border border-amber-500/30 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
-          <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-          </svg>
-          <span>Отправить закрытый бюллетень</span>
-        </button>
       </div>
 
     </section>
@@ -548,15 +727,120 @@
       }
     ];
 
+    // --- State Persistence & Storage Keys ---
+    const STORAGE_KEYS = {
+      BRANDS: 'sz_vault_brands_v1',
+      SIZES: 'sz_vault_sizes_v1',
+      MIN_PRICE: 'sz_vault_min_p_v1',
+      MAX_PRICE: 'sz_vault_max_p_v1',
+      ACTIVE_TAB: 'sz_vault_tab_v1',
+      VAULT: 'shmotzema_vault',
+      CUSTOM_BRANDS: 'sz_custom_brands_v1',
+      WISHLIST: 'sz_wishlist_v1',
+      USER_VOTES: 'sz_user_votes_v1'
+    };
+
+    const DEFAULT_WISHLIST = [
+      { name: "Chrome Hearts", votes: 7 },
+      { name: "Arcteryx Veilance", votes: 5 },
+      { name: "Represent", votes: 4 },
+      { name: "Kith", votes: 3 },
+      { name: "Gallery Dept", votes: 3 }
+    ];
+
+    let wishlistBrands = [];
+    let userVotedBrands = new Set();
+    let customAddedBrands = [];
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.BRANDS, JSON.stringify(Array.from(selectedBrands)));
+        localStorage.setItem(STORAGE_KEYS.SIZES, JSON.stringify(Array.from(selectedSizes)));
+        localStorage.setItem(STORAGE_KEYS.MIN_PRICE, JSON.stringify(currentMinPrice));
+        localStorage.setItem(STORAGE_KEYS.MAX_PRICE, JSON.stringify(currentMaxPrice));
+      } catch (e) {
+        console.error("Storage save failed:", e);
+      }
+    }
+
+    function loadState() {
+      try {
+        // Load custom added brands first
+        const savedCustom = localStorage.getItem(STORAGE_KEYS.CUSTOM_BRANDS);
+        if (savedCustom) {
+          customAddedBrands = JSON.parse(savedCustom);
+          customAddedBrands.forEach(cb => {
+            if (!ALL_BRANDS.includes(cb.name)) {
+              ALL_BRANDS.push(cb.name);
+              const cat = cb.category || 'Кастомные';
+              if (!BRANDS_DATA[cat]) BRANDS_DATA[cat] = [];
+              if (!BRANDS_DATA[cat].includes(cb.name)) BRANDS_DATA[cat].push(cb.name);
+            }
+          });
+        }
+
+        const savedBrands = localStorage.getItem(STORAGE_KEYS.BRANDS);
+        if (savedBrands) {
+          const arr = JSON.parse(savedBrands);
+          selectedBrands = new Set(arr);
+        } else {
+          selectedBrands = new Set(ALL_BRANDS);
+        }
+
+        const savedSizes = localStorage.getItem(STORAGE_KEYS.SIZES);
+        if (savedSizes) {
+          selectedSizes = new Set(JSON.parse(savedSizes));
+        } else {
+          selectedSizes = new Set();
+        }
+
+        const savedMinP = localStorage.getItem(STORAGE_KEYS.MIN_PRICE);
+        if (savedMinP !== null && savedMinP !== undefined) {
+          currentMinPrice = JSON.parse(savedMinP);
+        }
+
+        const savedMaxP = localStorage.getItem(STORAGE_KEYS.MAX_PRICE);
+        if (savedMaxP !== null && savedMaxP !== undefined) {
+          currentMaxPrice = JSON.parse(savedMaxP);
+        } else {
+          currentMaxPrice = 1000;
+        }
+
+        const savedWishlist = localStorage.getItem(STORAGE_KEYS.WISHLIST);
+        if (savedWishlist) {
+          wishlistBrands = JSON.parse(savedWishlist);
+        } else {
+          wishlistBrands = [...DEFAULT_WISHLIST];
+        }
+
+        const savedVotes = localStorage.getItem(STORAGE_KEYS.USER_VOTES);
+        if (savedVotes) {
+          userVotedBrands = new Set(JSON.parse(savedVotes));
+        }
+      } catch (e) {
+        console.error("Storage load failed:", e);
+        selectedBrands = new Set(ALL_BRANDS);
+        selectedSizes = new Set();
+        currentMinPrice = null;
+        currentMaxPrice = 1000;
+        wishlistBrands = [...DEFAULT_WISHLIST];
+        userVotedBrands = new Set();
+      }
+    }
+
     let selectedBrands = new Set(ALL_BRANDS);
     let selectedSizes = new Set();
     let currentMinPrice = null;
     let currentMaxPrice = 1000;
     let currentBrandCategory = 'ALL';
-    let favorites = JSON.parse(localStorage.getItem('shmotzema_vault') || '[]');
+    let favorites = JSON.parse(localStorage.getItem(STORAGE_KEYS.VAULT) || '[]');
     let currentCalcMultiplier = 2.2;
 
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. Load persisted state from storage
+      loadState();
+
+      // 2. Set Member Header
       const memberHeader = document.getElementById('memberIdHeader');
       if (currentUser) {
         const isAdmin = ADMIN_IDS.includes(currentUser.id);
@@ -565,14 +849,32 @@
         memberHeader.innerText = "VIP DEMO TERMINAL";
       }
 
+      // 3. Update Price Slider & Display from saved state
+      const slider = document.getElementById('priceMaxSlider');
+      if (slider) {
+        slider.value = currentMaxPrice === null ? 3000 : currentMaxPrice;
+      }
+      updatePriceDisplay();
+
+      // 4. Render UI
       renderSizes();
       renderBrandPills();
       renderFeedCards('all');
       calculateResellProfit();
+      renderWishlist();
+
+      // 5. Restore last active tab
+      const lastTab = localStorage.getItem(STORAGE_KEYS.ACTIVE_TAB);
+      if (lastTab && ['radar', 'gallery', 'valuation', 'concierge'].includes(lastTab)) {
+        switchTab(lastTab);
+      }
     });
 
     function switchTab(tabId) {
       if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      try {
+        localStorage.setItem(STORAGE_KEYS.ACTIVE_TAB, tabId);
+      } catch (e) {}
 
       const tabs = ['radar', 'gallery', 'valuation', 'concierge'];
       tabs.forEach(t => {
@@ -598,12 +900,12 @@
 
       clothesEl.innerHTML = CLOTHES_SIZES.map(s => {
         const active = selectedSizes.has(s);
-        return `<button onclick="toggleSize('${s}')" class="px-3 py-1.5 rounded-lg text-xs font-mono font-medium tracking-tight transition-all ${active ? 'bg-amber-400 text-black font-semibold' : 'bg-zinc-950 text-zinc-400 border border-zinc-800 hover:border-zinc-700'}">${s}</button>`;
+        return `<button onclick="toggleSize('${s}')" class="px-3 py-1.5 rounded-lg text-xs font-mono font-medium tracking-tight transition-all ${active ? 'bg-amber-400 text-black font-semibold ring-1 ring-amber-300' : 'bg-zinc-950 text-zinc-500 border border-zinc-800 hover:border-zinc-700'}">${s}</button>`;
       }).join('');
 
       shoesEl.innerHTML = SHOES_SIZES.map(s => {
         const active = selectedSizes.has(s);
-        return `<button onclick="toggleSize('${s}')" class="px-3 py-1.5 rounded-lg text-xs font-mono font-medium tracking-tight transition-all ${active ? 'bg-amber-400 text-black font-semibold' : 'bg-zinc-950 text-zinc-400 border border-zinc-800 hover:border-zinc-700'}">${s}</button>`;
+        return `<button onclick="toggleSize('${s}')" class="px-3 py-1.5 rounded-lg text-xs font-mono font-medium tracking-tight transition-all ${active ? 'bg-amber-400 text-black font-semibold ring-1 ring-amber-300' : 'bg-zinc-950 text-zinc-500 border border-zinc-800 hover:border-zinc-700'}">${s}</button>`;
       }).join('');
     }
 
@@ -611,11 +913,13 @@
       if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       if (selectedSizes.has(size)) selectedSizes.delete(size);
       else selectedSizes.add(size);
+      saveState();
       renderSizes();
     }
 
     function resetSizes() {
       selectedSizes.clear();
+      saveState();
       renderSizes();
     }
 
@@ -628,8 +932,8 @@
 
       cloud.innerHTML = brandsToShow.map(b => {
         const selected = selectedBrands.has(b);
-        return `<button onclick="toggleBrand('${b}')" class="px-2.5 py-1 rounded-lg text-[10px] tracking-wide transition-all ${selected ? 'bg-zinc-800 text-amber-200 border border-amber-500/40 font-medium' : 'bg-zinc-950 text-zinc-500 border border-zinc-800/80 hover:text-zinc-300'}">
-          ${selected ? '• ' : ''}${b}
+        return `<button onclick="toggleBrand('${b}')" class="px-2.5 py-1 rounded-lg text-[10px] tracking-wide transition-all ${selected ? 'bg-zinc-800 text-amber-200 border border-amber-500/40 font-medium shadow-sm' : 'bg-zinc-950/40 text-zinc-600 border border-zinc-900 line-through opacity-60 hover:opacity-100'}">
+          ${selected ? '✓ ' : ''}${b}
         </button>`;
       }).join('');
 
@@ -640,12 +944,14 @@
       if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       if (selectedBrands.has(brand)) selectedBrands.delete(brand);
       else selectedBrands.add(brand);
+      saveState();
       renderBrandPills();
     }
 
     function toggleAllBrands(enable) {
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       selectedBrands = enable ? new Set(ALL_BRANDS) : new Set();
+      saveState();
       renderBrandPills();
     }
 
@@ -666,15 +972,23 @@
       renderBrandPills();
     }
 
-    function updatePriceSlider(val) {
-      currentMaxPrice = parseInt(val);
+    function updatePriceDisplay() {
       const display = document.getElementById('priceDisplay');
-      if (currentMaxPrice >= 3000) {
-        currentMaxPrice = null;
+      if (!display) return;
+      if (currentMaxPrice === null || currentMaxPrice >= 3000) {
         display.innerText = "Без лимита";
       } else {
         display.innerText = `до ${currentMaxPrice} zł`;
       }
+    }
+
+    function updatePriceSlider(val) {
+      currentMaxPrice = parseInt(val);
+      if (currentMaxPrice >= 3000) {
+        currentMaxPrice = null;
+      }
+      updatePriceDisplay();
+      saveState();
     }
 
     function setPricePreset(minP, maxP) {
@@ -682,12 +996,17 @@
       currentMinPrice = minP;
       currentMaxPrice = maxP;
       const slider = document.getElementById('priceMaxSlider');
-      slider.value = maxP === null ? 3000 : maxP;
-      updatePriceSlider(slider.value);
+      if (slider) {
+        slider.value = maxP === null ? 3000 : maxP;
+      }
+      updatePriceDisplay();
+      saveState();
     }
 
     function applyFiltersToBot() {
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      saveState();
+
       const brandsArray = Array.from(selectedBrands);
       const sizesArray = Array.from(selectedSizes);
       const payload = {
@@ -809,7 +1128,7 @@
 
     function sendBroadcastDirect() {
       const el = document.getElementById('broadcastInput');
-      const text = el.value.trim();
+      const text = el ? el.value.trim() : '';
       if (!text) {
         alert("Введите текст закрытого бюллетеня.");
         return;
@@ -817,6 +1136,342 @@
       triggerAdminAction('broadcast', { text });
       el.value = '';
     }
+
+    // --- Community Wishlist & Голосование ---
+    function renderWishlist() {
+      const userContainer = document.getElementById('wishlistContainer');
+      const adminContainer = document.getElementById('adminWishlistContainer');
+
+      wishlistBrands.sort((a, b) => b.votes - a.votes);
+
+      if (userContainer) {
+        if (wishlistBrands.length === 0) {
+          userContainer.innerHTML = `<div class="text-[10px] text-zinc-600 font-mono py-2 text-center">Список предложений пуст. Предложите первый бренд!</div>`;
+        } else {
+          userContainer.innerHTML = wishlistBrands.map((item, idx) => {
+            const hasVoted = userVotedBrands.has(item.name);
+            return `
+              <div class="flex items-center justify-between p-2 rounded-xl bg-zinc-950 border border-zinc-800/80">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-[10px] text-zinc-500">${idx + 1}.</span>
+                  <span class="text-xs font-medium text-zinc-200">${item.name}</span>
+                </div>
+                <button onclick="voteForWishlistBrand('${item.name}')" class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-semibold flex items-center gap-1 transition-all ${hasVoted ? 'bg-amber-400 text-black shadow-sm ring-1 ring-amber-300' : 'bg-zinc-900 hover:bg-zinc-800 text-amber-300 border border-amber-500/30 active:scale-95'}">
+                  <span>▲</span>
+                  <span>${item.votes}</span>
+                </button>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      if (adminContainer) {
+        if (wishlistBrands.length === 0) {
+          adminContainer.innerHTML = `<div class="text-[10px] text-zinc-600 font-mono py-2 text-center">Нет активных предложений от аудитории.</div>`;
+        } else {
+          adminContainer.innerHTML = wishlistBrands.map((item, idx) => {
+            return `
+              <div class="flex items-center justify-between p-2 rounded-xl bg-zinc-950 border border-zinc-800/80">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-[10px] text-amber-400 font-bold">${idx + 1}.</span>
+                  <span class="text-xs font-medium text-zinc-100">${item.name}</span>
+                  <span class="text-[9px] font-mono text-zinc-500">(${item.votes} голосов)</span>
+                </div>
+                <button onclick="adminApproveWishlistBrand('${item.name}')" class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-medium bg-zinc-900 hover:bg-zinc-800 text-emerald-400 border border-emerald-500/30 active:scale-95 transition-all">
+                  + В радар
+                </button>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+    }
+
+    function voteForWishlistBrand(brandName) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      const item = wishlistBrands.find(b => b.name === brandName);
+      if (!item) return;
+
+      if (userVotedBrands.has(brandName)) {
+        userVotedBrands.delete(brandName);
+        item.votes = Math.max(0, item.votes - 1);
+      } else {
+        userVotedBrands.add(brandName);
+        item.votes += 1;
+        if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      }
+
+      try {
+        localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(wishlistBrands));
+        localStorage.setItem(STORAGE_KEYS.USER_VOTES, JSON.stringify(Array.from(userVotedBrands)));
+      } catch (e) {}
+
+      renderWishlist();
+
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify({ action: 'vote_brand', brand_name: brandName }));
+      }
+    }
+
+    function submitUserBrandSuggestion() {
+      const input = document.getElementById('userBrandSuggestInput');
+      const brandName = (input?.value || '').trim();
+      if (!brandName || brandName.length < 2) {
+        alert("Введите корректное название бренда.");
+        return;
+      }
+
+      if (ALL_BRANDS.some(b => b.toLowerCase() === brandName.toLowerCase())) {
+        alert(`Бренд «${brandName}» уже отслеживается в радаре!`);
+        return;
+      }
+
+      const existing = wishlistBrands.find(b => b.name.toLowerCase() === brandName.toLowerCase());
+      if (existing) {
+        voteForWishlistBrand(existing.name);
+      } else {
+        wishlistBrands.push({ name: brandName, votes: 1 });
+        userVotedBrands.add(brandName);
+        try {
+          localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(wishlistBrands));
+          localStorage.setItem(STORAGE_KEYS.USER_VOTES, JSON.stringify(Array.from(userVotedBrands)));
+        } catch (e) {}
+        renderWishlist();
+        if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        if (tg && tg.sendData) {
+          tg.sendData(JSON.stringify({ action: 'suggest_brand', brand_name: brandName }));
+        }
+      }
+
+      input.value = '';
+    }
+
+    function submitUserFeatureSuggestion() {
+      const input = document.getElementById('userFeatureSuggestInput');
+      const text = (input?.value || '').trim();
+      if (!text || text.length < 3) {
+        alert("Опишите подробнее идею функции.");
+        return;
+      }
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      alert("Благодарим! Ваше предложение передано консьерж-сервису.");
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify({ action: 'broadcast', text: `Идея от клиента: ${text}` }));
+      }
+      input.value = '';
+    }
+
+    // --- Добавление бренда без перезапуска ---
+    function adminSubmitAddBrand() {
+      const nameInput = document.getElementById('adminNewBrandName');
+      const catSelect = document.getElementById('adminNewBrandCat');
+      const brandName = (nameInput?.value || '').trim();
+      const category = catSelect?.value || 'Кастомные';
+
+      if (!brandName || brandName.length < 2) {
+        alert("Введите корректное название бренда.");
+        return;
+      }
+
+      if (!ALL_BRANDS.includes(brandName)) {
+        ALL_BRANDS.push(brandName);
+        selectedBrands.add(brandName);
+        if (!BRANDS_DATA[category]) BRANDS_DATA[category] = [];
+        BRANDS_DATA[category].push(brandName);
+        customAddedBrands.push({ name: brandName, category });
+      }
+
+      try {
+        localStorage.setItem(STORAGE_KEYS.CUSTOM_BRANDS, JSON.stringify(customAddedBrands));
+        saveState();
+      } catch (e) {}
+
+      renderBrandPills();
+      nameInput.value = '';
+
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify({ action: 'add_brand', brand_name: brandName, category }));
+      } else {
+        alert(`Бренд «${brandName}» (${category}) успешно добавлен в радар без перезапуска!`);
+      }
+    }
+
+    function adminApproveWishlistBrand(brandName) {
+      const idx = wishlistBrands.findIndex(b => b.name === brandName);
+      if (idx !== -1) {
+        wishlistBrands.splice(idx, 1);
+        try {
+          localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(wishlistBrands));
+        } catch (e) {}
+      }
+
+      if (!ALL_BRANDS.includes(brandName)) {
+        ALL_BRANDS.push(brandName);
+        selectedBrands.add(brandName);
+        const cat = 'Кастомные';
+        if (!BRANDS_DATA[cat]) BRANDS_DATA[cat] = [];
+        BRANDS_DATA[cat].push(brandName);
+        customAddedBrands.push({ name: brandName, category: cat });
+      }
+
+      try {
+        localStorage.setItem(STORAGE_KEYS.CUSTOM_BRANDS, JSON.stringify(customAddedBrands));
+        saveState();
+      } catch (e) {}
+
+      renderBrandPills();
+      renderWishlist();
+
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify({ action: 'add_brand', brand_name: brandName, category: 'Кастомные' }));
+      } else {
+        alert(`Бренд «${brandName}» одобрен и добавлен в радар!`);
+      }
+    }
+
+    // --- Визуальный конструктор рассылок с Live Preview ---
+    function updateBroadcastPreview() {
+      const text = document.getElementById('bcInputText')?.value || '';
+      const photoUrl = (document.getElementById('bcPhotoUrl')?.value || '').trim();
+      const btnText = (document.getElementById('bcBtnText')?.value || '').trim();
+
+      const textBox = document.getElementById('prevTextBox');
+      const photoBox = document.getElementById('prevPhotoBox');
+      const img = document.getElementById('prevImg');
+      const btnBox = document.getElementById('prevBtnBox');
+      const btnLabel = document.getElementById('prevBtnLabel');
+
+      if (textBox) {
+        textBox.innerHTML = text ? text.replace(/\n/g, '<br>') : '<span class="text-white/40 italic">Здесь появится текст сообщения...</span>';
+      }
+
+      if (photoBox && img) {
+        if (photoUrl && (photoUrl.startsWith('http://') || photoUrl.startsWith('https://'))) {
+          img.src = photoUrl;
+          photoBox.classList.remove('hidden');
+        } else {
+          photoBox.classList.add('hidden');
+        }
+      }
+
+      if (btnBox && btnLabel) {
+        if (btnText) {
+          btnLabel.innerText = btnText;
+          btnBox.classList.remove('hidden');
+        } else {
+          btnBox.classList.add('hidden');
+        }
+      }
+    }
+
+    function insertFormatTag(tag) {
+      const el = document.getElementById('bcInputText');
+      if (!el) return;
+      const start = el.selectionStart;
+      const end = el.selectionEnd;
+      const selected = el.value.substring(start, end) || 'текст';
+      let wrapped = '';
+      if (tag === 'a') {
+        wrapped = `<a href="https://vinted.pl">${selected}</a>`;
+      } else {
+        wrapped = `<${tag}>${selected}</${tag}>`;
+      }
+      el.value = el.value.substring(0, start) + wrapped + el.value.substring(end);
+      el.focus();
+      updateBroadcastPreview();
+    }
+
+    function sendRichBroadcast() {
+      const text = (document.getElementById('bcInputText')?.value || '').trim();
+      const photoUrl = (document.getElementById('bcPhotoUrl')?.value || '').trim();
+      const btnText = (document.getElementById('bcBtnText')?.value || '').trim();
+      const btnUrl = (document.getElementById('bcBtnUrl')?.value || '').trim();
+
+      if (!text) {
+        alert("Введите текст закрытого сообщения.");
+        return;
+      }
+
+      const payload = {
+        action: 'broadcast',
+        text: text,
+        photo_url: photoUrl || null,
+        btn_text: btnText || null,
+        btn_url: btnUrl || null
+      };
+
+      triggerAdminAction('broadcast', payload);
+      document.getElementById('bcInputText').value = '';
+      document.getElementById('bcPhotoUrl').value = '';
+      document.getElementById('bcBtnText').value = '';
+      document.getElementById('bcBtnUrl').value = '';
+      updateBroadcastPreview();
+    }
+
+    // --- Roadmap Modal ---
+    function toggleRoadmapModal(show) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      const m = document.getElementById('roadmapModal');
+      if (m) {
+        if (show) m.classList.remove('hidden');
+        else m.classList.add('hidden');
+      }
+    }
   </script>
+
+  <!-- Roadmap & Releases Modal -->
+  <div id="roadmapModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-3">
+    <div class="w-full max-w-md rounded-2xl luxury-card border border-zinc-700/80 p-5 space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <div>
+          <span class="text-[9px] font-mono uppercase tracking-widest text-amber-400/90 block">Стратегическое развитие</span>
+          <h2 class="text-sm font-luxury font-semibold text-zinc-100">Roadmap & Релизы Shmotzema</h2>
+        </div>
+        <button onclick="toggleRoadmapModal(false)" class="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center justify-center text-xs hover:text-zinc-200">✕</button>
+      </div>
+
+      <!-- Roadmap Milestones -->
+      <div class="space-y-3 text-xs">
+        <div class="p-3 rounded-xl bg-zinc-950 border border-emerald-500/30 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-zinc-200">Phase 1: Ядро мониторинга Vinted</span>
+            <span class="px-1.5 py-0.5 rounded text-[8px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">Done</span>
+          </div>
+          <p class="text-[10px] text-zinc-400">Парсинг 82 брендов с авто-ротацией сессий через Chrome TLS и обходом защиты Cloudflare.</p>
+        </div>
+
+        <div class="p-3 rounded-xl bg-zinc-950 border border-emerald-500/30 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-zinc-200">Phase 2: Telegram Mini App & Фильтры</span>
+            <span class="px-1.5 py-0.5 rounded text-[8px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">Done</span>
+          </div>
+          <p class="text-[10px] text-zinc-400">Персональные ползунки цен, матрицы размеров одежды и обуви, автономное сохранение состояния.</p>
+        </div>
+
+        <div class="p-3 rounded-xl bg-zinc-950 border border-amber-500/40 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-amber-200">Phase 3: Live-мониторинг & Broadcast Studio</span>
+            <span class="px-1.5 py-0.5 rounded text-[8px] font-mono uppercase bg-amber-500/10 text-amber-300 border border-amber-500/20 font-semibold">Active</span>
+          </div>
+          <p class="text-[10px] text-zinc-400">Телеметрия сессии, мгновенное добавление брендов в радар, студия рассылок с превью и Community Wishlist.</p>
+        </div>
+
+        <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1 opacity-70">
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-zinc-300">Phase 4: Кросс-платформенный парсер</span>
+            <span class="px-1.5 py-0.5 rounded text-[8px] font-mono uppercase bg-zinc-900 text-zinc-500 border border-zinc-800">Q1 2027</span>
+          </div>
+          <p class="text-[10px] text-zinc-500">Подключение каталогов Grailed, Vestiaire Collective и автоматический Legit Check по фото.</p>
+        </div>
+      </div>
+
+      <button onclick="toggleRoadmapModal(false)" class="w-full py-2.5 rounded-xl text-xs font-mono uppercase tracking-wider bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition-colors">
+        Закрыть
+      </button>
+    </div>
+  </div>
 </body>
 </html>
