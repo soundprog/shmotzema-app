@@ -1,36 +1,69 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Shmotzema App</title>
+  <title>SHMOTZEMA • Private Client</title>
   <!-- Telegram WebApp JS SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Luxury Fonts: Cinzel & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: var(--tg-theme-bg-color, #0f0f11);
-      --card: var(--tg-theme-secondary-bg-color, #1a1a1e);
-      --text: var(--tg-theme-text-color, #f4f4f5);
-      --hint: var(--tg-theme-hint-color, #71717a);
-      --btn: var(--tg-theme-button-color, #2563eb);
-      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+      --bg: #070709;
+      --surface: #0e0e12;
+      --surface-elevated: #14141a;
+      --border: #1e1e26;
+      --border-accent: #2e2e3a;
+      --gold: #d4af37;
+      --gold-light: #f3e5ab;
+      --gold-muted: rgba(212, 175, 55, 0.15);
+      --text: #f4f4f6;
+      --text-muted: #7e7e8e;
+      --font-serif: 'Cinzel', serif;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
     }
+
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: var(--font-sans);
       -webkit-tap-highlight-color: transparent;
+      letter-spacing: -0.015em;
     }
-    .tg-card {
-      background-color: var(--card);
+
+    .font-luxury {
+      font-family: var(--font-serif);
+      letter-spacing: 0.08em;
     }
-    .accent-btn {
-      background-color: var(--btn);
-      color: var(--btn-text);
+
+    .font-num {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
     }
-    /* Hide scrollbars for clean mobile feel */
+
+    .luxury-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+    }
+
+    .luxury-elevated {
+      background-color: var(--surface-elevated);
+      border: 1px solid var(--border-accent);
+    }
+
+    .gold-glow {
+      box-shadow: 0 0 25px -5px rgba(212, 175, 55, 0.18);
+    }
+
+    /* Minimalist luxury scrollbars */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -38,325 +71,395 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    /* Range slider custom styling */
+
+    /* Custom Range Slider */
     input[type=range] {
-      accent-color: #3b82f6;
+      accent-color: #d4af37;
     }
   </style>
 </head>
-<body class="p-3 pb-24 select-none">
-  <div class="max-w-md mx-auto space-y-3.5">
+<body class="p-3.5 pb-28 select-none antialiased min-h-screen">
+  <div class="max-w-md mx-auto space-y-4">
 
-    <!-- Top Bar -->
-    <header class="flex items-center justify-between pb-2 border-b border-zinc-800/80">
-      <div class="flex items-center gap-2">
-        <span class="text-2xl">⚡</span>
+    <!-- Private Client Header -->
+    <header class="flex items-center justify-between pb-3.5 border-b border-zinc-800/80 pt-1">
+      <div class="flex items-center gap-3">
+        <!-- Monogram Seal -->
+        <div class="w-9 h-9 rounded-full bg-gradient-to-b from-zinc-800 to-zinc-950 border border-amber-500/30 flex items-center justify-center text-amber-300 font-luxury font-bold text-xs shadow-md">
+          SZ
+        </div>
         <div>
-          <h1 class="text-sm font-bold tracking-tight">Shmotzema App</h1>
-          <p id="userStatusLabel" class="text-[11px] text-zinc-400">Загрузка профиля...</p>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xs font-luxury font-semibold uppercase tracking-widest text-zinc-100">Shmotzema</h1>
+            <span class="px-1.5 py-0.5 rounded text-[9px] font-mono tracking-wider bg-amber-500/10 text-amber-300/90 border border-amber-500/20 uppercase">Private</span>
+          </div>
+          <p id="memberIdHeader" class="text-[10px] text-zinc-500 font-mono tracking-tight mt-0.5">MEMBER • AUTHENTICATING</p>
         </div>
       </div>
-      <div class="flex items-center gap-1.5">
-        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          ● Vinted Live
-        </span>
+
+      <!-- Live Radar Pulse -->
+      <div class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+        <span class="tracking-wider">RADAR ON</span>
       </div>
     </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="flex gap-1.5 p-1 rounded-xl tg-card border border-zinc-800/60 overflow-x-auto no-scrollbar text-xs font-medium">
-      <button onclick="switchTab('filters')" id="tab-filters" class="flex-1 min-w-[70px] py-2 rounded-lg bg-blue-600 text-white font-semibold transition-all">
-        ⚙️ Фильтры
+    <!-- Sleek Navigation Tabs -->
+    <nav class="grid grid-cols-4 gap-1 p-1 rounded-xl luxury-card text-[11px] font-medium tracking-wide">
+      <button onclick="switchTab('radar')" id="tab-radar" class="flex flex-col items-center justify-center py-2 rounded-lg bg-zinc-800/90 text-amber-200 border border-amber-500/20 transition-all">
+        <svg class="w-3.5 h-3.5 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 3v9l6 3"/>
+        </svg>
+        <span class="text-[10px] tracking-wider uppercase font-medium">Радар</span>
       </button>
-      <button onclick="switchTab('feed')" id="tab-feed" class="flex-1 min-w-[70px] py-2 rounded-lg text-zinc-400 hover:text-white transition-all">
-        🛍️ Лента
+
+      <button onclick="switchTab('gallery')" id="tab-gallery" class="flex flex-col items-center justify-center py-2 rounded-lg text-zinc-400 hover:text-zinc-200 transition-all">
+        <svg class="w-3.5 h-3.5 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <path d="m21 15-5-5L5 21"/>
+        </svg>
+        <span class="text-[10px] tracking-wider uppercase font-medium">Галерея</span>
       </button>
-      <button onclick="switchTab('calc')" id="tab-calc" class="flex-1 min-w-[70px] py-2 rounded-lg text-zinc-400 hover:text-white transition-all">
-        📊 Resell AI
+
+      <button onclick="switchTab('valuation')" id="tab-valuation" class="flex flex-col items-center justify-center py-2 rounded-lg text-zinc-400 hover:text-zinc-200 transition-all">
+        <svg class="w-3.5 h-3.5 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        <span class="text-[10px] tracking-wider uppercase font-medium">Оценка</span>
       </button>
-      <button onclick="switchTab('crm')" id="tab-crm" class="hidden min-w-[65px] py-2 rounded-lg text-amber-400 hover:text-white transition-all">
-        👑 CRM
-      </button>
-      <button onclick="switchTab('roadmap')" id="tab-roadmap" class="min-w-[65px] py-2 rounded-lg text-zinc-400 hover:text-white transition-all">
-        🗺️ Инфо
+
+      <button onclick="switchTab('concierge')" id="tab-concierge" class="flex flex-col items-center justify-center py-2 rounded-lg text-zinc-400 hover:text-zinc-200 transition-all">
+        <svg class="w-3.5 h-3.5 mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span class="text-[10px] tracking-wider uppercase font-medium">Консьерж</span>
       </button>
     </nav>
 
     <!-- ================================================================= -->
-    <!-- TAB 1: ВИЗУАЛЬНЫЙ КОНСТРУКТОР ФИЛЬТРОВ -->
+    <!-- VIEW 1: РАДАР (ПЕРСОНАЛЬНЫЙ ГАРДЕРОБ И ФИЛЬТРЫ) -->
     <!-- ================================================================= -->
-    <section id="view-filters" class="space-y-3.5">
-      <!-- Price Range Card -->
-      <div class="p-3.5 rounded-2xl tg-card border border-zinc-800/80 space-y-2.5">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-zinc-200">💰 Ценовой коридор</span>
-          <span id="priceDisplay" class="text-xs font-mono font-bold text-blue-400">Любая цена</span>
-        </div>
-        <div class="space-y-1">
-          <div class="flex justify-between text-[11px] text-zinc-400">
-            <span>Максимальная цена:</span>
-            <span id="sliderValue" class="font-bold text-zinc-200">1000 zł</span>
-          </div>
-          <input type="range" id="priceMaxSlider" min="100" max="3000" step="50" value="1000" oninput="updatePriceSlider(this.value)" class="w-full h-1.5 bg-zinc-700 rounded-lg cursor-pointer">
-          <div class="flex justify-between text-[9px] text-zinc-500 pt-0.5">
-            <span>100 zł</span>
-            <span>1000 zł</span>
-            <span>2000 zł</span>
-            <span>3000+ zł (Без лимита)</span>
-          </div>
-        </div>
-        <div class="flex gap-1.5 pt-1">
-          <button onclick="setPricePreset(0, 300)" class="flex-1 py-1 rounded-lg text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-300">До 300 zł</button>
-          <button onclick="setPricePreset(300, 700)" class="flex-1 py-1 rounded-lg text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-300">300-700 zł</button>
-          <button onclick="setPricePreset(500, 1500)" class="flex-1 py-1 rounded-lg text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-300">500-1500 zł</button>
-          <button onclick="setPricePreset(null, null)" class="flex-1 py-1 rounded-lg text-[10px] bg-zinc-800 hover:bg-zinc-700 text-blue-400">Любая</button>
-        </div>
-      </div>
+    <section id="view-radar" class="space-y-3.5">
 
-      <!-- Sizes Selector -->
-      <div class="p-3.5 rounded-2xl tg-card border border-zinc-800/80 space-y-2.5">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-zinc-200">📏 Размеры</span>
-          <button onclick="resetSizes()" class="text-[10px] text-blue-400">Выбрать все</button>
-        </div>
-        <div>
-          <div class="text-[10px] uppercase font-semibold text-zinc-500 mb-1.5">Одежда:</div>
-          <div class="flex flex-wrap gap-1.5" id="clothesSizesContainer">
-            <!-- JS injects sizes -->
-          </div>
-        </div>
-        <div>
-          <div class="text-[10px] uppercase font-semibold text-zinc-500 mb-1.5">Обувь:</div>
-          <div class="flex flex-wrap gap-1.5" id="shoesSizesContainer">
-            <!-- JS injects sizes -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Brands Selector -->
-      <div class="p-3.5 rounded-2xl tg-card border border-zinc-800/80 space-y-3">
+      <!-- Budget Ceiling Card -->
+      <div class="p-4 rounded-2xl luxury-card space-y-3">
         <div class="flex items-center justify-between">
           <div>
-            <span class="text-xs font-bold text-zinc-200">🏷️ Бренды</span>
-            <span id="brandsCountBadge" class="text-[10px] font-mono ml-1.5 text-blue-400">82 выбрано</span>
+            <span class="text-[10px] uppercase font-mono tracking-widest text-zinc-500 block">Ценовой лимит</span>
+            <span class="text-xs font-medium text-zinc-200">Порог приобретения</span>
           </div>
-          <div class="flex gap-2">
-            <button onclick="toggleAllBrands(true)" class="text-[10px] text-emerald-400">Все</button>
-            <span class="text-zinc-600">|</span>
-            <button onclick="toggleAllBrands(false)" class="text-[10px] text-rose-400">Снять</button>
+          <div class="text-right">
+            <span id="priceDisplay" class="text-sm font-num font-bold text-amber-300 tracking-tight">Без лимита</span>
+            <span class="text-[9px] font-mono text-zinc-500 block uppercase">PLN • Vinted</span>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 pt-1">
+          <input type="range" id="priceMaxSlider" min="150" max="3000" step="50" value="1000" oninput="updatePriceSlider(this.value)" class="w-full h-1 bg-zinc-800 rounded-lg cursor-pointer">
+          <div class="flex justify-between text-[10px] font-mono text-zinc-500 pt-0.5">
+            <span>150 zł</span>
+            <span>1000 zł</span>
+            <span>2000 zł</span>
+            <span class="text-amber-400/80">Без лимита</span>
+          </div>
+        </div>
+
+        <!-- Presets -->
+        <div class="grid grid-cols-4 gap-1.5 pt-1">
+          <button onclick="setPricePreset(0, 400)" class="py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-[10px] font-num text-zinc-300 transition-colors">≤ 400</button>
+          <button onclick="setPricePreset(400, 900)" class="py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-[10px] font-num text-zinc-300 transition-colors">400–900</button>
+          <button onclick="setPricePreset(900, 2000)" class="py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-[10px] font-num text-zinc-300 transition-colors">900–2k</button>
+          <button onclick="setPricePreset(null, null)" class="py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[10px] text-amber-300 font-medium transition-colors">Любой</button>
+        </div>
+      </div>
+
+      <!-- Sizing Matrix -->
+      <div class="p-4 rounded-2xl luxury-card space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] uppercase font-mono tracking-widest text-zinc-500 block">Размерная сетка</span>
+            <span class="text-xs font-medium text-zinc-200">Параметры гардероба</span>
+          </div>
+          <button onclick="resetSizes()" class="text-[10px] text-amber-400/90 hover:text-amber-300 font-medium tracking-wide">Сбросить</button>
+        </div>
+
+        <div class="space-y-2.5">
+          <div>
+            <span class="text-[9px] uppercase font-mono tracking-widest text-zinc-500 block mb-1.5">Одежда (Apparel)</span>
+            <div class="flex flex-wrap gap-1.5" id="clothesSizesContainer"></div>
+          </div>
+          <div>
+            <span class="text-[9px] uppercase font-mono tracking-widest text-zinc-500 block mb-1.5">Обувь (Footwear EU)</span>
+            <div class="flex flex-wrap gap-1.5" id="shoesSizesContainer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Maisons & Brands Selection -->
+      <div class="p-4 rounded-2xl luxury-card space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] uppercase font-mono tracking-widest text-zinc-500 block">Селекция домов моды</span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-xs font-medium text-zinc-200">Отслеживаемые бренды</span>
+              <span id="brandsCountBadge" class="text-[10px] font-num text-amber-300 font-semibold px-1.5 py-0.2 rounded bg-amber-500/10 border border-amber-500/20">82</span>
+            </div>
+          </div>
+          <div class="flex gap-2 text-[10px] font-mono">
+            <button onclick="toggleAllBrands(true)" class="text-amber-300 hover:text-amber-200">Все</button>
+            <span class="text-zinc-700">/</span>
+            <button onclick="toggleAllBrands(false)" class="text-zinc-500 hover:text-zinc-400">Очистить</button>
           </div>
         </div>
 
         <!-- Search Bar -->
         <div class="relative">
-          <input type="text" id="brandSearch" onkeyup="filterBrandsSearch()" placeholder="Поиск (Arc'teryx, Louis Vuitton, Nike)..." class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-900 border border-zinc-700/60 focus:outline-none focus:border-blue-500 text-zinc-100 placeholder-zinc-500">
+          <input type="text" id="brandSearch" onkeyup="filterBrandsSearch()" placeholder="Поиск (Hermes, The Row, Margiela)..." class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-950 border border-zinc-800 focus:outline-none focus:border-amber-500/60 text-zinc-100 placeholder-zinc-600 transition-colors">
         </div>
 
-        <!-- Category Filter Chips -->
-        <div class="flex gap-1 overflow-x-auto no-scrollbar pb-0.5 text-[10px]">
-          <button onclick="selectBrandCat('ALL')" class="cat-pill px-2.5 py-1 rounded-full bg-blue-600 text-white whitespace-nowrap">Все (82)</button>
-          <button onclick="selectBrandCat('Люкс (Luxury)')" class="cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap">💎 Люкс</button>
-          <button onclick="selectBrandCat('Премиум (Contemporary)')" class="cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap">✨ Премиум</button>
-          <button onclick="selectBrandCat('Стритвир и аутдор')" class="cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap">👟 Стритвир</button>
-          <button onclick="selectBrandCat('Локал-бренды')" class="cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap">🌿 Локал</button>
-          <button onclick="selectBrandCat('Архив и винтаж')" class="cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap">🕰️ Винтаж</button>
+        <!-- Category Selector -->
+        <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5 text-[10px]">
+          <button onclick="selectBrandCat('ALL')" class="cat-pill px-3 py-1.5 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-200 whitespace-nowrap font-medium">Все дома</button>
+          <button onclick="selectBrandCat('Люкс (Luxury)')" class="cat-pill px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 whitespace-nowrap">Люкс</button>
+          <button onclick="selectBrandCat('Премиум (Contemporary)')" class="cat-pill px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 whitespace-nowrap">Премиум</button>
+          <button onclick="selectBrandCat('Стритвир и аутдор')" class="cat-pill px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 whitespace-nowrap">Стритвир</button>
+          <button onclick="selectBrandCat('Локал-бренды')" class="cat-pill px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 whitespace-nowrap">Локал</button>
+          <button onclick="selectBrandCat('Архив и винтаж')" class="cat-pill px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 whitespace-nowrap">Архив</button>
         </div>
 
-        <!-- Brands Pills Cloud -->
-        <div id="brandsPillCloud" class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto no-scrollbar p-1">
-          <!-- Populated by JS -->
-        </div>
+        <!-- Pills Cloud -->
+        <div id="brandsPillCloud" class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto no-scrollbar p-0.5"></div>
       </div>
 
-      <!-- Apply Sticky Button -->
-      <div class="sticky bottom-2 z-10 pt-1">
-        <button onclick="applyFiltersToBot()" class="w-full py-3 rounded-xl font-bold text-xs shadow-lg accent-btn flex items-center justify-center gap-2 active:scale-95 transition-transform">
-          <span>💾</span> Применить настройки в Telegram-боте
+      <!-- Action Button -->
+      <div class="sticky bottom-3 z-10 pt-1">
+        <button onclick="applyFiltersToBot()" class="w-full py-3.5 rounded-xl text-xs font-semibold tracking-wider uppercase bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-black shadow-lg gold-glow flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+          <svg class="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Синхронизировать предпочтения</span>
         </button>
       </div>
+
     </section>
 
     <!-- ================================================================= -->
-    <!-- TAB 2: ЛЕНТА СВЕЖИХ НАХОДОК И ИЗБРАННОЕ -->
+    <!-- VIEW 2: ГАЛЕРЕЯ (КУРИРОВАННАЯ ЛЕНТА & VAULT) -->
     <!-- ================================================================= -->
-    <section id="view-feed" class="hidden space-y-3">
-      <!-- Feed Filter Header -->
+    <section id="view-gallery" class="hidden space-y-3.5">
       <div class="flex items-center justify-between px-1">
-        <div class="flex gap-2 text-xs">
-          <button onclick="switchFeedMode('all')" id="feed-mode-all" class="font-bold text-white border-b-2 border-blue-500 pb-0.5">Все находки</button>
-          <button onclick="switchFeedMode('fav')" id="feed-mode-fav" class="text-zinc-400 hover:text-white pb-0.5">Избранное ❤️ (<span id="favCount">0</span>)</button>
+        <div class="flex gap-4 text-xs font-luxury">
+          <button onclick="switchFeedMode('all')" id="feed-mode-all" class="text-zinc-100 border-b-2 border-amber-400 pb-1 font-semibold tracking-wider">Все лоты</button>
+          <button onclick="switchFeedMode('fav')" id="feed-mode-fav" class="text-zinc-500 hover:text-zinc-300 pb-1 tracking-wider flex items-center gap-1.5">
+            <span>Избранное</span>
+            <span id="favCount" class="px-1.5 py-0.2 rounded-full bg-zinc-900 font-mono text-[9px] text-amber-300 border border-zinc-800">0</span>
+          </button>
         </div>
-        <span class="text-[10px] text-zinc-500">Автообновление</span>
+        <span class="text-[9px] font-mono tracking-widest text-zinc-500 uppercase">Live Stream</span>
       </div>
 
-      <!-- Feed Grid Cards -->
-      <div id="feedCardsContainer" class="grid grid-cols-2 gap-2.5">
-        <!-- Injected via JS -->
-      </div>
+      <div id="feedCardsContainer" class="grid grid-cols-2 gap-3"></div>
     </section>
 
     <!-- ================================================================= -->
-    <!-- TAB 3: RESELL AI КАЛЬКУЛЯТОР ПРОФИТА -->
+    <!-- VIEW 3: ОЦЕНКА И АРБИТРАЖ (ИНВЕСТИЦИОННЫЙ КАЛЬКУЛЯТОР) -->
     <!-- ================================================================= -->
-    <section id="view-calc" class="hidden space-y-3.5">
-      <div class="p-3.5 rounded-2xl tg-card border border-zinc-800/80 space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-zinc-200">📊 Калькулятор маржинальности</span>
-          <span class="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono">Resell v1.0</span>
-        </div>
-        <p class="text-[11px] text-zinc-400 leading-snug">
-          Рассчитайте чистую прибыль с перепродажи вещи с учетом комиссий платформ и логистики.
-        </p>
-
-        <!-- Inputs -->
-        <div class="space-y-2 text-xs">
+    <section id="view-valuation" class="hidden space-y-3.5">
+      <div class="p-4 rounded-2xl luxury-card space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2.5">
           <div>
-            <label class="block text-[11px] text-zinc-400 mb-1">Цена покупки на Vinted (zł):</label>
-            <input type="number" id="calcBuyPrice" value="250" oninput="calculateResellProfit()" class="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700/60 font-mono text-zinc-100 focus:outline-none focus:border-blue-500">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-zinc-500 block">Финансовый арбитраж</span>
+            <span class="text-xs font-semibold text-zinc-100">Калькулятор доходности лота</span>
+          </div>
+          <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-zinc-900 text-amber-400 border border-zinc-800">ALPHA v1.5</span>
+        </div>
+
+        <div class="space-y-3 text-xs pt-1">
+          <div>
+            <label class="block text-[10px] font-mono uppercase text-zinc-400 mb-1 tracking-wide">Цена покупки лота на Vinted (PLN):</label>
+            <input type="number" id="calcBuyPrice" value="320" oninput="calculateResellProfit()" class="w-full px-3 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 font-mono text-zinc-100 text-sm focus:outline-none focus:border-amber-500/60 transition-colors">
           </div>
 
           <div>
-            <label class="block text-[11px] text-zinc-400 mb-1">Платформа для продажи:</label>
-            <select id="calcPlatform" onchange="calculateResellProfit()" class="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700/60 text-zinc-100 focus:outline-none focus:border-blue-500">
-              <option value="grailed">Grailed (Комиссия ~9% + PayPal)</option>
-              <option value="avito">Авито / РФ Доставка (~7%)</option>
-              <option value="direct" selected>Telegram / Прямая продажа (0% комиссии)</option>
-              <option value="poizon">Poizon / StockX (~12%)</option>
+            <label class="block text-[10px] font-mono uppercase text-zinc-400 mb-1 tracking-wide">Канал реализации:</label>
+            <select id="calcPlatform" onchange="calculateResellProfit()" class="w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs focus:outline-none focus:border-amber-500/60">
+              <option value="direct" selected>Частная клиентура / Direct (0% комиссия)</option>
+              <option value="grailed">Grailed Global Archive (12.5% + PayPal)</option>
+              <option value="avito">Локальный ресейл / РФ Доставка (7%)</option>
+              <option value="poizon">Poizon / StockX Консигнация (12%)</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-[11px] text-zinc-400 mb-1">Ожидаемая наценка (Multiplier):</label>
-            <div class="grid grid-cols-3 gap-1.5">
-              <button onclick="setCalcMultiplier(1.6)" class="calc-mult-btn py-1.5 rounded-lg bg-zinc-800 text-[11px] text-zinc-300">1.6x (Быстро)</button>
-              <button onclick="setCalcMultiplier(2.2)" class="calc-mult-btn py-1.5 rounded-lg bg-blue-600 text-[11px] text-white font-bold">2.2x (Норма)</button>
-              <button onclick="setCalcMultiplier(3.0)" class="calc-mult-btn py-1.5 rounded-lg bg-zinc-800 text-[11px] text-zinc-300">3.0x (Грааль)</button>
+            <label class="block text-[10px] font-mono uppercase text-zinc-400 mb-1 tracking-wide">Целевая маржа (Множитель):</label>
+            <div class="grid grid-cols-3 gap-1.5 font-mono text-xs">
+              <button onclick="setCalcMultiplier(1.6)" class="calc-mult-btn py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200">1.6x</button>
+              <button onclick="setCalcMultiplier(2.2)" class="calc-mult-btn py-2 rounded-lg bg-amber-500/20 border border-amber-500/50 text-amber-300 font-semibold">2.2x</button>
+              <button onclick="setCalcMultiplier(3.0)" class="calc-mult-btn py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200">3.0x Grail</button>
             </div>
           </div>
         </div>
 
-        <!-- Result Card -->
-        <div class="p-3.5 rounded-xl bg-zinc-900/90 border border-zinc-800 space-y-2 mt-2">
+        <!-- Ledger Assessment Box -->
+        <div class="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800/90 space-y-2 mt-2">
           <div class="flex justify-between text-xs">
-            <span class="text-zinc-400">Рыночная цена продажи:</span>
-            <span id="calcSalePrice" class="font-mono font-bold text-zinc-200">550 zł</span>
+            <span class="text-zinc-500">Прогнозируемая продажа:</span>
+            <span id="calcSalePrice" class="font-num text-zinc-200 font-medium">704 zł</span>
           </div>
           <div class="flex justify-between text-xs">
-            <span class="text-zinc-400">Комиссия и доставка:</span>
-            <span id="calcFeeAmount" class="font-mono text-rose-400">- 45 zł</span>
+            <span class="text-zinc-500">Транзакционные издержки:</span>
+            <span id="calcFeeAmount" class="font-num text-zinc-400">0 zł</span>
           </div>
-          <div class="border-t border-zinc-800 pt-2 flex justify-between items-baseline">
-            <span class="text-xs font-semibold text-zinc-300">Чистая прибыль (Net):</span>
-            <span id="calcNetProfit" class="font-mono text-base font-bold text-emerald-400">+ 255 zł</span>
+          <div class="border-t border-zinc-800/80 pt-2 flex justify-between items-baseline">
+            <span class="text-xs font-semibold text-zinc-300">Чистый профит:</span>
+            <span id="calcNetProfit" class="font-num text-base font-bold text-amber-300">+ 384 zł</span>
           </div>
           <div class="flex justify-between text-[11px] pt-0.5">
-            <span class="text-zinc-400">Рентабельность (ROI):</span>
-            <span id="calcRoiPercent" class="font-mono font-bold text-emerald-400">102%</span>
-          </div>
-
-          <!-- Verdict Badge -->
-          <div id="calcVerdictBadge" class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-center text-xs font-bold text-emerald-400 mt-2">
-            🔥 Отличная маржа! Рекомендуется к выкупу
+            <span class="text-zinc-500">Рентабельность инвестиции:</span>
+            <span id="calcRoiPercent" class="font-num font-semibold text-emerald-400">120% ROI</span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ================================================================= -->
-    <!-- TAB 4: CRM КЛИЕНТОВ (Admin Only) -->
+    <!-- VIEW 4: КОНСЬЕРЖ И РЕЕСТР (CRM & МОНИТОРИНГ) -->
     <!-- ================================================================= -->
-    <section id="view-crm" class="hidden space-y-3">
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div class="p-3 rounded-xl tg-card border border-zinc-800/80">
-          <div class="text-zinc-400 text-[11px]">Клиенты бота</div>
-          <div class="text-xl font-bold mt-0.5">2 чел.</div>
-          <div class="text-[10px] text-emerald-400 mt-0.5">● 100% активны</div>
+    <section id="view-concierge" class="hidden space-y-3.5">
+
+      <!-- Executive Overview -->
+      <div class="grid grid-cols-3 gap-2">
+        <div class="p-3 rounded-xl luxury-card space-y-1">
+          <span class="text-[9px] uppercase font-mono tracking-wider text-zinc-500 block">Клиенты</span>
+          <div class="text-base font-bold font-num text-zinc-100">2 <span class="text-[10px] font-sans font-normal text-zinc-500">VIP</span></div>
+          <div class="text-[9px] text-emerald-400 font-mono">100% активны</div>
         </div>
-        <div class="p-3 rounded-xl tg-card border border-zinc-800/80">
-          <div class="text-zinc-400 text-[11px]">База товаров</div>
-          <div class="text-xl font-bold mt-0.5">68,724</div>
-          <div class="text-[10px] text-zinc-500 mt-0.5">seen_items (SQLite)</div>
+
+        <div class="p-3 rounded-xl luxury-card space-y-1">
+          <span class="text-[9px] uppercase font-mono tracking-wider text-zinc-500 block">Индекс базы</span>
+          <div class="text-base font-bold font-num text-zinc-100">68,724</div>
+          <div class="text-[9px] text-zinc-500 font-mono">лотов</div>
+        </div>
+
+        <div class="p-3 rounded-xl luxury-card space-y-1">
+          <span class="text-[9px] uppercase font-mono tracking-wider text-zinc-500 block">Селекция</span>
+          <div class="text-base font-bold font-num text-zinc-100">82</div>
+          <div class="text-[9px] text-amber-300 font-mono">домов моды</div>
         </div>
       </div>
 
-      <div class="p-3 rounded-xl tg-card border border-zinc-800/80 flex items-center justify-between">
-        <div>
-          <div class="text-xs font-semibold">Сессия Vinted.pl</div>
-          <div class="text-[11px] text-emerald-400">Авто-ротация каждые 15 мин</div>
+      <!-- Vinted Protocol Status -->
+      <div class="p-4 rounded-2xl luxury-card space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span class="text-xs font-semibold text-zinc-200">Vinted Enterprise Bridge</span>
+          </div>
+          <span class="text-[9px] font-mono text-zinc-500">JWT Token OK</span>
         </div>
-        <button onclick="triggerAdminAction('refresh_session', {})" class="px-3 py-1.5 rounded-lg text-xs font-medium accent-btn active:scale-95 transition-transform">
-          🔄 Обновить
+
+        <div class="grid grid-cols-2 gap-2 text-[11px] bg-zinc-950 p-2.5 rounded-lg border border-zinc-800/80">
+          <div>
+            <span class="text-zinc-500 text-[9px] uppercase font-mono block">Ротация сессии</span>
+            <span class="font-mono text-zinc-200 text-xs">Каждые 15 мин</span>
+          </div>
+          <div>
+            <span class="text-zinc-500 text-[9px] uppercase font-mono block">Срок сертификата</span>
+            <span class="font-mono text-amber-300 text-xs">до 12.02.2027</span>
+          </div>
+        </div>
+
+        <button onclick="triggerAdminAction('refresh_session', {})" class="w-full py-2.5 rounded-xl text-xs font-medium bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/60 text-zinc-200 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+          <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/>
+          </svg>
+          <span>Принудительный рефреш шлюза</span>
         </button>
       </div>
 
-      <div class="space-y-2">
-        <div class="text-xs font-semibold px-1">Список подписчиков:</div>
-
-        <div class="p-3 rounded-xl tg-card border border-zinc-800/80 space-y-1.5 text-xs">
-          <div class="flex items-center justify-between">
-            <span class="font-mono font-bold text-blue-400">6004332597 (Admin)</span>
-            <span class="text-emerald-400 text-[11px]">● Активен</span>
-          </div>
-          <div class="text-[11px] text-zinc-400">Фильтр: <b>Все 82 бренда</b> • <b>Все цены</b></div>
-          <button onclick="triggerAdminAction('toggle_pause', {chat_id: 6004332597})" class="w-full py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-[11px]">
-            ⏸ Переключить статус паузы
-          </button>
-        </div>
-
-        <div class="p-3 rounded-xl tg-card border border-zinc-800/80 space-y-1.5 text-xs">
-          <div class="flex items-center justify-between">
-            <span class="font-mono font-bold text-zinc-300">1640182648 (Друг)</span>
-            <span class="text-emerald-400 text-[11px]">● Активен</span>
-          </div>
-          <div class="text-[11px] text-zinc-400">Фильтр: <b>Все бренды</b> • <b>500-1000 zł</b></div>
-          <button onclick="triggerAdminAction('toggle_pause', {chat_id: 1640182648})" class="w-full py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-[11px]">
-            ⏸ Переключить статус паузы
-          </button>
-        </div>
-      </div>
-
-      <button onclick="promptBroadcastMsg()" class="w-full py-2.5 rounded-xl text-xs font-semibold accent-btn flex items-center justify-center gap-2 active:scale-95 transition-transform">
-        <span>📢</span> Отправить рассылку всем клиентам
-      </button>
-    </section>
-
-    <!-- ================================================================= -->
-    <!-- TAB 5: ROADMAP & ИНФО -->
-    <!-- ================================================================= -->
-    <section id="view-roadmap" class="hidden space-y-3">
-      <div class="p-3.5 rounded-2xl tg-card border border-zinc-800/80 space-y-2">
-        <h2 class="text-xs font-bold text-zinc-200">Roadmap развития @Shmotzema_bot</h2>
-        <p class="text-[11px] text-zinc-400 leading-snug">
-          Все этапы развития проекта от мониторинга до SaaS-платформы.
-        </p>
-      </div>
-
-      <div class="p-3 rounded-xl tg-card border border-amber-500/30 space-y-2">
+      <!-- Private Members Ledger -->
+      <div class="p-4 rounded-2xl luxury-card space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-amber-400">🚀 В разработке (v2.0)</span>
-          <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400">Active</span>
+          <span class="text-xs font-semibold text-zinc-200">Реестр доверенных лиц</span>
+          <span class="text-[9px] font-mono text-zinc-500">SQLite: subscribers</span>
         </div>
-        <div class="text-xs text-zinc-300 space-y-1">
-          <div>• Интерактивный Telegram WebApp конструктор фильтров</div>
-          <div>• Калькулятор маржинальности перепродажи (Resell AI)</div>
-          <div>• Визуальная лента свежих находок и вишлист</div>
+
+        <!-- Member 1 (Admin) -->
+        <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-luxury text-[9px] flex items-center justify-center font-bold">
+                A
+              </div>
+              <div>
+                <div class="font-mono text-xs font-semibold text-zinc-200">6004332597</div>
+                <div class="text-[9px] text-zinc-500">Системный владелец</div>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              Active
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-[10px] text-zinc-400 pt-1 border-t border-zinc-900 font-mono">
+            <div>Бренды: <span class="text-zinc-200 font-medium">Все 82</span></div>
+            <div>Лимит: <span class="text-zinc-200 font-medium">Без лимита</span></div>
+          </div>
+
+          <button onclick="triggerAdminAction('toggle_pause', {chat_id: 6004332597})" class="w-full py-1.5 rounded-lg text-[10px] font-mono uppercase bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition-colors">
+            Приостановить поток алертов
+          </button>
+        </div>
+
+        <!-- Member 2 (Friend) -->
+        <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-400 font-luxury text-[9px] flex items-center justify-center font-bold">
+                M
+              </div>
+              <div>
+                <div class="font-mono text-xs font-semibold text-zinc-200">1640182648</div>
+                <div class="text-[9px] text-zinc-500">Привилегированный клиент</div>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[9px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              Active
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-[10px] text-zinc-400 pt-1 border-t border-zinc-900 font-mono">
+            <div>Бренды: <span class="text-zinc-200 font-medium">Все бренды</span></div>
+            <div>Лимит: <span class="text-zinc-200 font-medium">500–1000 zł</span></div>
+          </div>
+
+          <button onclick="triggerAdminAction('toggle_pause', {chat_id: 1640182648})" class="w-full py-1.5 rounded-lg text-[10px] font-mono uppercase bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition-colors">
+            Приостановить поток алертов
+          </button>
         </div>
       </div>
 
-      <div class="p-3 rounded-xl tg-card border border-zinc-800/80 space-y-2">
-        <div class="text-xs font-bold text-zinc-400">💡 Запланировано (Backlog)</div>
-        <div class="text-xs text-zinc-400 space-y-1">
-          <div>• Автоматическая оплата подписки (Telegram Stars)</div>
-          <div>• Пул резидентских прокси под 1000+ брендов</div>
-          <div>• Интеграция автовыкупа через Vinted API</div>
-        </div>
+      <!-- Private Broadcast Engine -->
+      <div class="p-4 rounded-2xl luxury-card space-y-2.5">
+        <span class="text-xs font-semibold text-zinc-200 block">Экстренный закрытый бюллетень</span>
+        <textarea id="broadcastInput" rows="2" placeholder="Сообщение конфиденциальной рассылки всем клиентам..." class="w-full p-2.5 text-xs rounded-xl bg-zinc-950 border border-zinc-800 focus:outline-none focus:border-amber-500/50 text-zinc-100 placeholder-zinc-700 resize-none font-sans"></textarea>
+        <button onclick="sendBroadcastDirect()" class="w-full py-2.5 rounded-xl text-xs font-medium tracking-wide bg-zinc-900 hover:bg-zinc-800 text-amber-300 border border-amber-500/30 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+          <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          <span>Отправить закрытый бюллетень</span>
+        </button>
       </div>
+
     </section>
 
   </div>
 
   <script>
-    // --- 1. Telegram SDK Initialization ---
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
@@ -367,7 +470,6 @@
     const ADMIN_IDS = [6004332597];
     const currentUser = tg?.initDataUnsafe?.user;
 
-    // --- 2. Data Structures ---
     const BRANDS_DATA = {
       "Люкс (Luxury)": [
         "Chanel", "Louis Vuitton", "Hermes", "Prada", "Gucci", "Dior",
@@ -403,16 +505,14 @@
     const CLOTHES_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
     const SHOES_SIZES = ["40", "41", "42", "43", "44", "45"];
 
-    // Demo Feed Items
     const DEMO_ITEMS = [
       {
         id: "1",
-        title: "Louis Vuitton Monogram Pochette Bag",
+        title: "Louis Vuitton Monogram Pochette Clutch",
         brand: "Louis Vuitton",
-        cat: "Люкс",
         price: 340,
         origPrice: 950,
-        size: "One Size",
+        size: "Uni",
         img: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80",
         url: "https://www.vinted.pl/"
       },
@@ -420,7 +520,6 @@
         id: "2",
         title: "Arc'teryx Beta LT Jacket Gore-Tex Black",
         brand: "Arcteryx",
-        cat: "Стритвир",
         price: 490,
         origPrice: 1200,
         size: "L",
@@ -429,9 +528,8 @@
       },
       {
         id: "3",
-        title: "Stone Island Vintage Sweatshirt Badge",
+        title: "Stone Island Vintage Archive Badge Knit",
         brand: "Stone Island",
-        cat: "Стритвир",
         price: 280,
         origPrice: 700,
         size: "M",
@@ -442,7 +540,6 @@
         id: "4",
         title: "Prada Chocolate Brushed Leather Loafers",
         brand: "Prada",
-        cat: "Люкс",
         price: 620,
         origPrice: 1600,
         size: "42",
@@ -451,32 +548,21 @@
       }
     ];
 
-    // User State
     let selectedBrands = new Set(ALL_BRANDS);
     let selectedSizes = new Set();
     let currentMinPrice = null;
     let currentMaxPrice = 1000;
     let currentBrandCategory = 'ALL';
-    let favorites = JSON.parse(localStorage.getItem('shmotzema_favs') || '[]');
+    let favorites = JSON.parse(localStorage.getItem('shmotzema_vault') || '[]');
     let currentCalcMultiplier = 2.2;
 
-    // --- 3. DOM Elements Initialization ---
     document.addEventListener('DOMContentLoaded', () => {
-      // Check user role
-      const userBadge = document.getElementById('userStatusLabel');
-      const crmTab = document.getElementById('tab-crm');
-
+      const memberHeader = document.getElementById('memberIdHeader');
       if (currentUser) {
         const isAdmin = ADMIN_IDS.includes(currentUser.id);
-        if (isAdmin) {
-          userBadge.innerText = `Админ: ${currentUser.first_name || currentUser.id}`;
-          crmTab.classList.remove('hidden');
-        } else {
-          userBadge.innerText = `Клиент: ${currentUser.first_name || currentUser.id}`;
-        }
+        memberHeader.innerText = `${isAdmin ? 'VIP PROPRIETOR' : 'PRIVATE CLIENT'} • ${currentUser.first_name || currentUser.id}`;
       } else {
-        userBadge.innerText = "Предпросмотр";
-        crmTab.classList.remove('hidden'); // allow preview
+        memberHeader.innerText = "VIP DEMO TERMINAL";
       }
 
       renderSizes();
@@ -485,18 +571,16 @@
       calculateResellProfit();
     });
 
-    // --- 4. Tab Navigation ---
     function switchTab(tabId) {
       if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 
-      const tabs = ['filters', 'feed', 'calc', 'crm', 'roadmap'];
+      const tabs = ['radar', 'gallery', 'valuation', 'concierge'];
       tabs.forEach(t => {
         const viewEl = document.getElementById('view-' + t);
         const btnEl = document.getElementById('tab-' + t);
         if (viewEl) viewEl.classList.add('hidden');
         if (btnEl) {
-          btnEl.classList.remove('bg-blue-600', 'text-white', 'font-semibold');
-          btnEl.classList.add('text-zinc-400');
+          btnEl.className = "flex flex-col items-center justify-center py-2 rounded-lg text-zinc-400 hover:text-zinc-200 transition-all";
         }
       });
 
@@ -504,34 +588,29 @@
       const targetBtn = document.getElementById('tab-' + tabId);
       if (targetView) targetView.classList.remove('hidden');
       if (targetBtn) {
-        targetBtn.classList.add('bg-blue-600', 'text-white', 'font-semibold');
-        targetBtn.classList.remove('text-zinc-400');
+        targetBtn.className = "flex flex-col items-center justify-center py-2 rounded-lg bg-zinc-800/90 text-amber-200 border border-amber-500/20 transition-all";
       }
     }
 
-    // --- 5. Filters Logic ---
     function renderSizes() {
       const clothesEl = document.getElementById('clothesSizesContainer');
       const shoesEl = document.getElementById('shoesSizesContainer');
 
       clothesEl.innerHTML = CLOTHES_SIZES.map(s => {
         const active = selectedSizes.has(s);
-        return `<button onclick="toggleSize('${s}')" class="size-pill px-3 py-1.5 rounded-lg text-xs font-semibold ${active ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}">${s}</button>`;
+        return `<button onclick="toggleSize('${s}')" class="px-3 py-1.5 rounded-lg text-xs font-mono font-medium tracking-tight transition-all ${active ? 'bg-amber-400 text-black font-semibold' : 'bg-zinc-950 text-zinc-400 border border-zinc-800 hover:border-zinc-700'}">${s}</button>`;
       }).join('');
 
       shoesEl.innerHTML = SHOES_SIZES.map(s => {
         const active = selectedSizes.has(s);
-        return `<button onclick="toggleSize('${s}')" class="size-pill px-3 py-1.5 rounded-lg text-xs font-semibold ${active ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}">${s}</button>`;
+        return `<button onclick="toggleSize('${s}')" class="px-3 py-1.5 rounded-lg text-xs font-mono font-medium tracking-tight transition-all ${active ? 'bg-amber-400 text-black font-semibold' : 'bg-zinc-950 text-zinc-400 border border-zinc-800 hover:border-zinc-700'}">${s}</button>`;
       }).join('');
     }
 
     function toggleSize(size) {
       if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-      if (selectedSizes.has(size)) {
-        selectedSizes.delete(size);
-      } else {
-        selectedSizes.add(size);
-      }
+      if (selectedSizes.has(size)) selectedSizes.delete(size);
+      else selectedSizes.add(size);
       renderSizes();
     }
 
@@ -544,44 +623,29 @@
       const cloud = document.getElementById('brandsPillCloud');
       const query = (document.getElementById('brandSearch')?.value || '').toLowerCase();
 
-      let brandsToShow = [];
-      if (currentBrandCategory === 'ALL') {
-        brandsToShow = ALL_BRANDS;
-      } else {
-        brandsToShow = BRANDS_DATA[currentBrandCategory] || [];
-      }
-
-      if (query) {
-        brandsToShow = brandsToShow.filter(b => b.toLowerCase().includes(query));
-      }
+      let brandsToShow = currentBrandCategory === 'ALL' ? ALL_BRANDS : (BRANDS_DATA[currentBrandCategory] || []);
+      if (query) brandsToShow = brandsToShow.filter(b => b.toLowerCase().includes(query));
 
       cloud.innerHTML = brandsToShow.map(b => {
         const selected = selectedBrands.has(b);
-        return `<button onclick="toggleBrand('${b}')" class="px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${selected ? 'bg-blue-600/90 text-white shadow-sm' : 'bg-zinc-800/80 text-zinc-400 hover:text-zinc-200'}">
-          ${selected ? '✓ ' : '+ '}${b}
+        return `<button onclick="toggleBrand('${b}')" class="px-2.5 py-1 rounded-lg text-[10px] tracking-wide transition-all ${selected ? 'bg-zinc-800 text-amber-200 border border-amber-500/40 font-medium' : 'bg-zinc-950 text-zinc-500 border border-zinc-800/80 hover:text-zinc-300'}">
+          ${selected ? '• ' : ''}${b}
         </button>`;
       }).join('');
 
-      document.getElementById('brandsCountBadge').innerText = `${selectedBrands.size} выбрано`;
+      document.getElementById('brandsCountBadge').innerText = selectedBrands.size;
     }
 
     function toggleBrand(brand) {
       if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-      if (selectedBrands.has(brand)) {
-        selectedBrands.delete(brand);
-      } else {
-        selectedBrands.add(brand);
-      }
+      if (selectedBrands.has(brand)) selectedBrands.delete(brand);
+      else selectedBrands.add(brand);
       renderBrandPills();
     }
 
     function toggleAllBrands(enable) {
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      if (enable) {
-        selectedBrands = new Set(ALL_BRANDS);
-      } else {
-        selectedBrands.clear();
-      }
+      selectedBrands = enable ? new Set(ALL_BRANDS) : new Set();
       renderBrandPills();
     }
 
@@ -590,9 +654,9 @@
       currentBrandCategory = cat;
       document.querySelectorAll('.cat-pill').forEach(btn => {
         if (btn.innerText.includes(cat) || (cat === 'ALL' && btn.innerText.includes('Все'))) {
-          btn.className = "cat-pill px-2.5 py-1 rounded-full bg-blue-600 text-white whitespace-nowrap";
+          btn.className = "cat-pill px-3 py-1.5 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-200 whitespace-nowrap font-medium";
         } else {
-          btn.className = "cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap";
+          btn.className = "cat-pill px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 whitespace-nowrap";
         }
       });
       renderBrandPills();
@@ -605,15 +669,11 @@
     function updatePriceSlider(val) {
       currentMaxPrice = parseInt(val);
       const display = document.getElementById('priceDisplay');
-      const readout = document.getElementById('sliderValue');
-
       if (currentMaxPrice >= 3000) {
         currentMaxPrice = null;
-        display.innerText = "Любая цена (без лимита)";
-        readout.innerText = "Без лимита";
+        display.innerText = "Без лимита";
       } else {
         display.innerText = `до ${currentMaxPrice} zł`;
-        readout.innerText = `${currentMaxPrice} zł`;
       }
     }
 
@@ -621,23 +681,15 @@
       if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       currentMinPrice = minP;
       currentMaxPrice = maxP;
-
       const slider = document.getElementById('priceMaxSlider');
-      if (maxP === null) {
-        slider.value = 3000;
-        updatePriceSlider(3000);
-      } else {
-        slider.value = maxP;
-        updatePriceSlider(maxP);
-      }
+      slider.value = maxP === null ? 3000 : maxP;
+      updatePriceSlider(slider.value);
     }
 
     function applyFiltersToBot() {
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-
       const brandsArray = Array.from(selectedBrands);
       const sizesArray = Array.from(selectedSizes);
-
       const payload = {
         action: "save_filters",
         min_price: currentMinPrice,
@@ -645,56 +697,50 @@
         brands: brandsArray.length === ALL_BRANDS.length ? [] : (brandsArray.length === 0 ? ["__NONE__"] : brandsArray),
         sizes: sizesArray
       };
-
       if (tg && tg.sendData) {
         tg.sendData(JSON.stringify(payload));
       } else {
-        alert("Настройки применены:\n" + JSON.stringify(payload, null, 2));
+        alert("Предпочтения сохранены в базу:\n" + JSON.stringify(payload, null, 2));
       }
     }
 
-    // --- 6. Live Feed & Favorites ---
     function renderFeedCards(mode = 'all') {
       const container = document.getElementById('feedCardsContainer');
       const favBadge = document.getElementById('favCount');
       favBadge.innerText = favorites.length;
 
-      let items = DEMO_ITEMS;
-      if (mode === 'fav') {
-        items = DEMO_ITEMS.filter(it => favorites.includes(it.id));
-      }
+      let items = mode === 'fav' ? DEMO_ITEMS.filter(it => favorites.includes(it.id)) : DEMO_ITEMS;
 
       if (items.length === 0) {
-        container.innerHTML = `<div class="col-span-2 py-8 text-center text-xs text-zinc-500">
-          В избранном пока ничего нет.<br>Нажмите на сердечко ❤️ у понравившейся вещи!
-        </div>`;
+        container.innerHTML = `<div class="col-span-2 py-10 text-center text-xs text-zinc-600 font-luxury uppercase tracking-widest">Хранилище избранного пусто</div>`;
         return;
       }
 
       container.innerHTML = items.map(it => {
         const isFav = favorites.includes(it.id);
         const discount = Math.round((1 - it.price / it.origPrice) * 100);
-
         return `
-          <div class="rounded-xl tg-card border border-zinc-800/80 overflow-hidden flex flex-col justify-between group">
-            <div class="relative aspect-square bg-zinc-900 overflow-hidden">
-              <img src="${it.img}" alt="${it.title}" class="w-full h-full object-cover">
-              <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-black/70 text-emerald-400 backdrop-blur-sm">
+          <div class="rounded-2xl luxury-card overflow-hidden flex flex-col justify-between group border border-zinc-800/80">
+            <div class="relative aspect-[4/5] bg-zinc-950 overflow-hidden">
+              <img src="${it.img}" alt="${it.title}" class="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-300">
+              <span class="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[9px] font-mono tracking-wider font-semibold bg-black/80 text-amber-300 border border-amber-500/20 backdrop-blur-md">
                 -${discount}%
               </span>
-              <button onclick="toggleFavorite('${it.id}')" class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-xs active:scale-90 transition-transform">
-                ${isFav ? '❤️' : '🤍'}
+              <button onclick="toggleFavorite('${it.id}')" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center text-xs border border-zinc-700/60 active:scale-90 transition-transform">
+                <svg class="w-3.5 h-3.5 ${isFav ? 'text-amber-400 fill-amber-400' : 'text-zinc-400'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
               </button>
             </div>
-            <div class="p-2.5 space-y-1.5">
-              <div class="text-[10px] text-zinc-400 uppercase font-semibold">${it.brand} • ${it.size}</div>
-              <h3 class="text-xs font-medium leading-snug line-clamp-2 text-zinc-200">${it.title}</h3>
-              <div class="flex items-baseline gap-1.5 pt-0.5">
-                <span class="text-sm font-bold font-mono text-emerald-400">${it.price} zł</span>
-                <span class="text-[10px] text-zinc-500 line-through">${it.origPrice} zł</span>
+            <div class="p-3 space-y-1.5">
+              <div class="text-[9px] text-zinc-500 font-luxury tracking-widest uppercase">${it.brand} • ${it.size}</div>
+              <h3 class="text-xs font-medium leading-snug line-clamp-1 text-zinc-200">${it.title}</h3>
+              <div class="flex items-baseline gap-2 pt-0.5">
+                <span class="text-sm font-bold font-num text-amber-300">${it.price} zł</span>
+                <span class="text-[10px] text-zinc-600 line-through font-num">${it.origPrice} zł</span>
               </div>
-              <a href="${it.url}" target="_blank" class="block w-full py-1.5 text-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-[11px] font-medium text-blue-400 transition-colors">
-                Купить на Vinted ↗
+              <a href="${it.url}" target="_blank" class="block w-full py-1.5 text-center rounded-lg bg-zinc-900 hover:bg-zinc-800 text-[10px] font-mono tracking-wider uppercase text-zinc-300 border border-zinc-800 transition-colors">
+                Приобрести ↗
               </a>
             </div>
           </div>
@@ -704,38 +750,33 @@
 
     function toggleFavorite(itemId) {
       if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-      if (favorites.includes(itemId)) {
-        favorites = favorites.filter(id => id !== itemId);
-      } else {
-        favorites.push(itemId);
-      }
-      localStorage.setItem('shmotzema_favs', JSON.stringify(favorites));
-      renderFeedCards(document.getElementById('feed-mode-fav').classList.contains('font-bold') ? 'fav' : 'all');
+      if (favorites.includes(itemId)) favorites = favorites.filter(id => id !== itemId);
+      else favorites.push(itemId);
+      localStorage.setItem('shmotzema_vault', JSON.stringify(favorites));
+      renderFeedCards(document.getElementById('feed-mode-fav').classList.contains('text-zinc-100') ? 'fav' : 'all');
     }
 
     function switchFeedMode(mode) {
       const allBtn = document.getElementById('feed-mode-all');
       const favBtn = document.getElementById('feed-mode-fav');
-
       if (mode === 'all') {
-        allBtn.className = "font-bold text-white border-b-2 border-blue-500 pb-0.5";
-        favBtn.className = "text-zinc-400 hover:text-white pb-0.5";
+        allBtn.className = "text-zinc-100 border-b-2 border-amber-400 pb-1 font-semibold tracking-wider";
+        favBtn.className = "text-zinc-500 hover:text-zinc-300 pb-1 tracking-wider flex items-center gap-1.5";
       } else {
-        favBtn.className = "font-bold text-white border-b-2 border-blue-500 pb-0.5";
-        allBtn.className = "text-zinc-400 hover:text-white pb-0.5";
+        favBtn.className = "text-zinc-100 border-b-2 border-amber-400 pb-1 font-semibold tracking-wider flex items-center gap-1.5";
+        allBtn.className = "text-zinc-500 hover:text-zinc-300 pb-1 tracking-wider";
       }
       renderFeedCards(mode);
     }
 
-    // --- 7. Resell AI Calculator ---
     function setCalcMultiplier(mult) {
       if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
       currentCalcMultiplier = mult;
       document.querySelectorAll('.calc-mult-btn').forEach(btn => {
         if (btn.innerText.includes(mult)) {
-          btn.className = "calc-mult-btn py-1.5 rounded-lg bg-blue-600 text-[11px] text-white font-bold";
+          btn.className = "calc-mult-btn py-2 rounded-lg bg-amber-500/20 border border-amber-500/50 text-amber-300 font-semibold";
         } else {
-          btn.className = "calc-mult-btn py-1.5 rounded-lg bg-zinc-800 text-[11px] text-zinc-300";
+          btn.className = "calc-mult-btn py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400";
         }
       });
       calculateResellProfit();
@@ -744,52 +785,37 @@
     function calculateResellProfit() {
       const buyPrice = parseFloat(document.getElementById('calcBuyPrice').value) || 0;
       const platform = document.getElementById('calcPlatform').value;
-
-      let feeRate = 0;
-      if (platform === 'grailed') feeRate = 0.09 + 0.035; // 9% fee + 3.5% payment
-      else if (platform === 'avito') feeRate = 0.07;
-      else if (platform === 'poizon') feeRate = 0.12;
-      else if (platform === 'direct') feeRate = 0.0;
-
+      let feeRate = platform === 'grailed' ? 0.125 : (platform === 'avito' ? 0.07 : (platform === 'poizon' ? 0.12 : 0.0));
       const salePrice = Math.round(buyPrice * currentCalcMultiplier);
       const feeAmount = Math.round(salePrice * feeRate);
       const netProfit = Math.round(salePrice - buyPrice - feeAmount);
       const roi = buyPrice > 0 ? Math.round((netProfit / buyPrice) * 100) : 0;
 
       document.getElementById('calcSalePrice').innerText = `${salePrice} zł`;
-      document.getElementById('calcFeeAmount').innerText = feeAmount > 0 ? `- ${feeAmount} zł` : "0 zł (Без комиссии)";
+      document.getElementById('calcFeeAmount').innerText = feeAmount > 0 ? `${feeAmount} zł` : "0 zł";
       document.getElementById('calcNetProfit').innerText = `${netProfit >= 0 ? '+' : ''}${netProfit} zł`;
-      document.getElementById('calcRoiPercent').innerText = `${roi}%`;
-
-      const badge = document.getElementById('calcVerdictBadge');
-      if (roi >= 90) {
-        badge.className = "p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-center text-xs font-bold text-emerald-400 mt-2";
-        badge.innerText = "🔥 Отличная маржа! Топовый дроп для выкупа";
-      } else if (roi >= 40) {
-        badge.className = "p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-center text-xs font-bold text-blue-400 mt-2";
-        badge.innerText = "👍 Хороший профит с надежной ликвидностью";
-      } else {
-        badge.className = "p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-center text-xs font-bold text-amber-400 mt-2";
-        badge.innerText = "⚠️ Низкая маржа — стоит брать только под себя";
-      }
+      document.getElementById('calcRoiPercent').innerText = `${roi}% ROI`;
     }
 
-    // --- 8. Admin Controls ---
     function triggerAdminAction(action, payload) {
       if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       const data = { action, ...payload };
       if (tg && tg.sendData) {
         tg.sendData(JSON.stringify(data));
       } else {
-        alert("Админ-действие: " + JSON.stringify(data));
+        alert("Команда консьержа передана в бот: " + JSON.stringify(data));
       }
     }
 
-    function promptBroadcastMsg() {
-      const msg = prompt("Введите текст сообщения для рассылки всем подписчикам бота:");
-      if (msg && msg.trim()) {
-        triggerAdminAction('broadcast', { text: msg.trim() });
+    function sendBroadcastDirect() {
+      const el = document.getElementById('broadcastInput');
+      const text = el.value.trim();
+      if (!text) {
+        alert("Введите текст закрытого бюллетеня.");
+        return;
       }
+      triggerAdminAction('broadcast', { text });
+      el.value = '';
     }
   </script>
 </body>
