@@ -3,230 +3,352 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Shmotzema Admin & CRM</title>
+  <title>Shmotzema App</title>
   <!-- Telegram WebApp JS SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    :root {
+      --bg: var(--tg-theme-bg-color, #0f0f11);
+      --card: var(--tg-theme-secondary-bg-color, #1a1a1e);
+      --text: var(--tg-theme-text-color, #f4f4f5);
+      --hint: var(--tg-theme-hint-color, #71717a);
+      --btn: var(--tg-theme-button-color, #2563eb);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+    }
     body {
-      background-color: var(--tg-theme-bg-color, #18181b);
-      color: var(--tg-theme-text-color, #fafafa);
+      background-color: var(--bg);
+      color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
     .tg-card {
-      background-color: var(--tg-theme-secondary-bg-color, #27272a);
+      background-color: var(--card);
     }
-    .tg-button {
-      background-color: var(--tg-theme-button-color, #3b82f6);
-      color: var(--tg-theme-button-text-color, #ffffff);
+    .accent-btn {
+      background-color: var(--btn);
+      color: var(--btn-text);
     }
-    .tg-hint {
-      color: var(--tg-theme-hint-color, #a1a1aa);
+    /* Hide scrollbars for clean mobile feel */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Range slider custom styling */
+    input[type=range] {
+      accent-color: #3b82f6;
     }
   </style>
 </head>
-<body class="p-4 pb-12 select-none">
-  <div class="max-w-md mx-auto space-y-4">
+<body class="p-3 pb-24 select-none">
+  <div class="max-w-md mx-auto space-y-3.5">
 
-    <!-- Top Header -->
-    <header class="flex items-center justify-between pb-3 border-b border-zinc-700/50">
-      <div class="flex items-center gap-2.5">
+    <!-- Top Bar -->
+    <header class="flex items-center justify-between pb-2 border-b border-zinc-800/80">
+      <div class="flex items-center gap-2">
         <span class="text-2xl">⚡</span>
         <div>
-          <h1 class="text-base font-bold leading-tight">Shmotzema Core</h1>
-          <p id="userRoleBadge" class="text-[11px] tg-hint">Подключение к Telegram...</p>
+          <h1 class="text-sm font-bold tracking-tight">Shmotzema App</h1>
+          <p id="userStatusLabel" class="text-[11px] text-zinc-400">Загрузка профиля...</p>
         </div>
       </div>
-      <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-        v1.4 Live
-      </span>
+      <div class="flex items-center gap-1.5">
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          ● Vinted Live
+        </span>
+      </div>
     </header>
 
     <!-- Navigation Tabs -->
-    <nav class="grid grid-cols-3 gap-1.5 p-1 rounded-xl tg-card text-xs font-medium">
-      <button onclick="switchTab('crm')" id="tab-crm" class="py-2 rounded-lg bg-zinc-700/60 text-white font-semibold transition-all">
-        👥 CRM
+    <nav class="flex gap-1.5 p-1 rounded-xl tg-card border border-zinc-800/60 overflow-x-auto no-scrollbar text-xs font-medium">
+      <button onclick="switchTab('filters')" id="tab-filters" class="flex-1 min-w-[70px] py-2 rounded-lg bg-blue-600 text-white font-semibold transition-all">
+        ⚙️ Фильтры
       </button>
-      <button onclick="switchTab('roadmap')" id="tab-roadmap" class="py-2 rounded-lg text-zinc-400 hover:text-white transition-all">
-        🗺️ Roadmap
+      <button onclick="switchTab('feed')" id="tab-feed" class="flex-1 min-w-[70px] py-2 rounded-lg text-zinc-400 hover:text-white transition-all">
+        🛍️ Лента
       </button>
-      <button onclick="switchTab('changelog')" id="tab-changelog" class="py-2 rounded-lg text-zinc-400 hover:text-white transition-all">
-        📜 Релизы
+      <button onclick="switchTab('calc')" id="tab-calc" class="flex-1 min-w-[70px] py-2 rounded-lg text-zinc-400 hover:text-white transition-all">
+        📊 Resell AI
+      </button>
+      <button onclick="switchTab('crm')" id="tab-crm" class="hidden min-w-[65px] py-2 rounded-lg text-amber-400 hover:text-white transition-all">
+        👑 CRM
+      </button>
+      <button onclick="switchTab('roadmap')" id="tab-roadmap" class="min-w-[65px] py-2 rounded-lg text-zinc-400 hover:text-white transition-all">
+        🗺️ Инфо
       </button>
     </nav>
 
-    <!-- TAB 1: CRM & Users (Admin Only) -->
-    <section id="view-crm" class="space-y-3">
-      <!-- KPI Cards -->
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div class="p-3 rounded-xl tg-card border border-zinc-700/40">
-          <div class="tg-hint text-[11px]">Всего клиентов</div>
-          <div class="text-xl font-bold mt-0.5">2 чел.</div>
-          <div class="text-[10px] text-emerald-400 mt-0.5">● 100% активны</div>
+    <!-- ================================================================= -->
+    <!-- TAB 1: ВИЗУАЛЬНЫЙ КОНСТРУКТОР ФИЛЬТРОВ -->
+    <!-- ================================================================= -->
+    <section id="view-filters" class="space-y-3.5">
+      <!-- Price Range Card -->
+      <div class="p-3.5 rounded-2xl tg-card border border-zinc-800/80 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-zinc-200">💰 Ценовой коридор</span>
+          <span id="priceDisplay" class="text-xs font-mono font-bold text-blue-400">Любая цена</span>
         </div>
-        <div class="p-3 rounded-xl tg-card border border-zinc-700/40">
-          <div class="tg-hint text-[11px]">База товаров</div>
-          <div class="text-xl font-bold mt-0.5">68,724</div>
-          <div class="text-[10px] tg-hint mt-0.5">seen_items (SQLite)</div>
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] text-zinc-400">
+            <span>Максимальная цена:</span>
+            <span id="sliderValue" class="font-bold text-zinc-200">1000 zł</span>
+          </div>
+          <input type="range" id="priceMaxSlider" min="100" max="3000" step="50" value="1000" oninput="updatePriceSlider(this.value)" class="w-full h-1.5 bg-zinc-700 rounded-lg cursor-pointer">
+          <div class="flex justify-between text-[9px] text-zinc-500 pt-0.5">
+            <span>100 zł</span>
+            <span>1000 zł</span>
+            <span>2000 zł</span>
+            <span>3000+ zł (Без лимита)</span>
+          </div>
+        </div>
+        <div class="flex gap-1.5 pt-1">
+          <button onclick="setPricePreset(0, 300)" class="flex-1 py-1 rounded-lg text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-300">До 300 zł</button>
+          <button onclick="setPricePreset(300, 700)" class="flex-1 py-1 rounded-lg text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-300">300-700 zł</button>
+          <button onclick="setPricePreset(500, 1500)" class="flex-1 py-1 rounded-lg text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-300">500-1500 zł</button>
+          <button onclick="setPricePreset(null, null)" class="flex-1 py-1 rounded-lg text-[10px] bg-zinc-800 hover:bg-zinc-700 text-blue-400">Любая</button>
         </div>
       </div>
 
-      <!-- Quick Action: Session & Refresh -->
-      <div class="p-3 rounded-xl tg-card border border-zinc-700/40 flex items-center justify-between">
+      <!-- Sizes Selector -->
+      <div class="p-3.5 rounded-2xl tg-card border border-zinc-800/80 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-zinc-200">📏 Размеры</span>
+          <button onclick="resetSizes()" class="text-[10px] text-blue-400">Выбрать все</button>
+        </div>
+        <div>
+          <div class="text-[10px] uppercase font-semibold text-zinc-500 mb-1.5">Одежда:</div>
+          <div class="flex flex-wrap gap-1.5" id="clothesSizesContainer">
+            <!-- JS injects sizes -->
+          </div>
+        </div>
+        <div>
+          <div class="text-[10px] uppercase font-semibold text-zinc-500 mb-1.5">Обувь:</div>
+          <div class="flex flex-wrap gap-1.5" id="shoesSizesContainer">
+            <!-- JS injects sizes -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Brands Selector -->
+      <div class="p-3.5 rounded-2xl tg-card border border-zinc-800/80 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-bold text-zinc-200">🏷️ Бренды</span>
+            <span id="brandsCountBadge" class="text-[10px] font-mono ml-1.5 text-blue-400">82 выбрано</span>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="toggleAllBrands(true)" class="text-[10px] text-emerald-400">Все</button>
+            <span class="text-zinc-600">|</span>
+            <button onclick="toggleAllBrands(false)" class="text-[10px] text-rose-400">Снять</button>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="relative">
+          <input type="text" id="brandSearch" onkeyup="filterBrandsSearch()" placeholder="Поиск (Arc'teryx, Louis Vuitton, Nike)..." class="w-full px-3 py-2 text-xs rounded-xl bg-zinc-900 border border-zinc-700/60 focus:outline-none focus:border-blue-500 text-zinc-100 placeholder-zinc-500">
+        </div>
+
+        <!-- Category Filter Chips -->
+        <div class="flex gap-1 overflow-x-auto no-scrollbar pb-0.5 text-[10px]">
+          <button onclick="selectBrandCat('ALL')" class="cat-pill px-2.5 py-1 rounded-full bg-blue-600 text-white whitespace-nowrap">Все (82)</button>
+          <button onclick="selectBrandCat('Люкс (Luxury)')" class="cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap">💎 Люкс</button>
+          <button onclick="selectBrandCat('Премиум (Contemporary)')" class="cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap">✨ Премиум</button>
+          <button onclick="selectBrandCat('Стритвир и аутдор')" class="cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap">👟 Стритвир</button>
+          <button onclick="selectBrandCat('Локал-бренды')" class="cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap">🌿 Локал</button>
+          <button onclick="selectBrandCat('Архив и винтаж')" class="cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap">🕰️ Винтаж</button>
+        </div>
+
+        <!-- Brands Pills Cloud -->
+        <div id="brandsPillCloud" class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto no-scrollbar p-1">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Apply Sticky Button -->
+      <div class="sticky bottom-2 z-10 pt-1">
+        <button onclick="applyFiltersToBot()" class="w-full py-3 rounded-xl font-bold text-xs shadow-lg accent-btn flex items-center justify-center gap-2 active:scale-95 transition-transform">
+          <span>💾</span> Применить настройки в Telegram-боте
+        </button>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 2: ЛЕНТА СВЕЖИХ НАХОДОК И ИЗБРАННОЕ -->
+    <!-- ================================================================= -->
+    <section id="view-feed" class="hidden space-y-3">
+      <!-- Feed Filter Header -->
+      <div class="flex items-center justify-between px-1">
+        <div class="flex gap-2 text-xs">
+          <button onclick="switchFeedMode('all')" id="feed-mode-all" class="font-bold text-white border-b-2 border-blue-500 pb-0.5">Все находки</button>
+          <button onclick="switchFeedMode('fav')" id="feed-mode-fav" class="text-zinc-400 hover:text-white pb-0.5">Избранное ❤️ (<span id="favCount">0</span>)</button>
+        </div>
+        <span class="text-[10px] text-zinc-500">Автообновление</span>
+      </div>
+
+      <!-- Feed Grid Cards -->
+      <div id="feedCardsContainer" class="grid grid-cols-2 gap-2.5">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 3: RESELL AI КАЛЬКУЛЯТОР ПРОФИТА -->
+    <!-- ================================================================= -->
+    <section id="view-calc" class="hidden space-y-3.5">
+      <div class="p-3.5 rounded-2xl tg-card border border-zinc-800/80 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-zinc-200">📊 Калькулятор маржинальности</span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono">Resell v1.0</span>
+        </div>
+        <p class="text-[11px] text-zinc-400 leading-snug">
+          Рассчитайте чистую прибыль с перепродажи вещи с учетом комиссий платформ и логистики.
+        </p>
+
+        <!-- Inputs -->
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">Цена покупки на Vinted (zł):</label>
+            <input type="number" id="calcBuyPrice" value="250" oninput="calculateResellProfit()" class="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700/60 font-mono text-zinc-100 focus:outline-none focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">Платформа для продажи:</label>
+            <select id="calcPlatform" onchange="calculateResellProfit()" class="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700/60 text-zinc-100 focus:outline-none focus:border-blue-500">
+              <option value="grailed">Grailed (Комиссия ~9% + PayPal)</option>
+              <option value="avito">Авито / РФ Доставка (~7%)</option>
+              <option value="direct" selected>Telegram / Прямая продажа (0% комиссии)</option>
+              <option value="poizon">Poizon / StockX (~12%)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[11px] text-zinc-400 mb-1">Ожидаемая наценка (Multiplier):</label>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button onclick="setCalcMultiplier(1.6)" class="calc-mult-btn py-1.5 rounded-lg bg-zinc-800 text-[11px] text-zinc-300">1.6x (Быстро)</button>
+              <button onclick="setCalcMultiplier(2.2)" class="calc-mult-btn py-1.5 rounded-lg bg-blue-600 text-[11px] text-white font-bold">2.2x (Норма)</button>
+              <button onclick="setCalcMultiplier(3.0)" class="calc-mult-btn py-1.5 rounded-lg bg-zinc-800 text-[11px] text-zinc-300">3.0x (Грааль)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Card -->
+        <div class="p-3.5 rounded-xl bg-zinc-900/90 border border-zinc-800 space-y-2 mt-2">
+          <div class="flex justify-between text-xs">
+            <span class="text-zinc-400">Рыночная цена продажи:</span>
+            <span id="calcSalePrice" class="font-mono font-bold text-zinc-200">550 zł</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-zinc-400">Комиссия и доставка:</span>
+            <span id="calcFeeAmount" class="font-mono text-rose-400">- 45 zł</span>
+          </div>
+          <div class="border-t border-zinc-800 pt-2 flex justify-between items-baseline">
+            <span class="text-xs font-semibold text-zinc-300">Чистая прибыль (Net):</span>
+            <span id="calcNetProfit" class="font-mono text-base font-bold text-emerald-400">+ 255 zł</span>
+          </div>
+          <div class="flex justify-between text-[11px] pt-0.5">
+            <span class="text-zinc-400">Рентабельность (ROI):</span>
+            <span id="calcRoiPercent" class="font-mono font-bold text-emerald-400">102%</span>
+          </div>
+
+          <!-- Verdict Badge -->
+          <div id="calcVerdictBadge" class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-center text-xs font-bold text-emerald-400 mt-2">
+            🔥 Отличная маржа! Рекомендуется к выкупу
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 4: CRM КЛИЕНТОВ (Admin Only) -->
+    <!-- ================================================================= -->
+    <section id="view-crm" class="hidden space-y-3">
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="p-3 rounded-xl tg-card border border-zinc-800/80">
+          <div class="text-zinc-400 text-[11px]">Клиенты бота</div>
+          <div class="text-xl font-bold mt-0.5">2 чел.</div>
+          <div class="text-[10px] text-emerald-400 mt-0.5">● 100% активны</div>
+        </div>
+        <div class="p-3 rounded-xl tg-card border border-zinc-800/80">
+          <div class="text-zinc-400 text-[11px]">База товаров</div>
+          <div class="text-xl font-bold mt-0.5">68,724</div>
+          <div class="text-[10px] text-zinc-500 mt-0.5">seen_items (SQLite)</div>
+        </div>
+      </div>
+
+      <div class="p-3 rounded-xl tg-card border border-zinc-800/80 flex items-center justify-between">
         <div>
           <div class="text-xs font-semibold">Сессия Vinted.pl</div>
           <div class="text-[11px] text-emerald-400">Авто-ротация каждые 15 мин</div>
         </div>
-        <button onclick="triggerAction('refresh_session', {})" class="px-3 py-1.5 rounded-lg text-xs font-medium tg-button transition-transform active:scale-95">
+        <button onclick="triggerAdminAction('refresh_session', {})" class="px-3 py-1.5 rounded-lg text-xs font-medium accent-btn active:scale-95 transition-transform">
           🔄 Обновить
         </button>
       </div>
 
-      <!-- User List -->
       <div class="space-y-2">
-        <div class="flex items-center justify-between text-xs font-semibold px-1">
-          <span>Подписчики бота</span>
-          <span class="tg-hint text-[11px]">Нажмите для действий</span>
+        <div class="text-xs font-semibold px-1">Список подписчиков:</div>
+
+        <div class="p-3 rounded-xl tg-card border border-zinc-800/80 space-y-1.5 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-mono font-bold text-blue-400">6004332597 (Admin)</span>
+            <span class="text-emerald-400 text-[11px]">● Активен</span>
+          </div>
+          <div class="text-[11px] text-zinc-400">Фильтр: <b>Все 82 бренда</b> • <b>Все цены</b></div>
+          <button onclick="triggerAdminAction('toggle_pause', {chat_id: 6004332597})" class="w-full py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-[11px]">
+            ⏸ Переключить статус паузы
+          </button>
         </div>
 
-        <!-- User Card 1 -->
-        <div class="p-3 rounded-xl tg-card border border-zinc-700/40 space-y-2">
+        <div class="p-3 rounded-xl tg-card border border-zinc-800/80 space-y-1.5 text-xs">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span class="font-mono text-xs font-bold">6004332597</span>
-              <span class="px-1.5 py-0.2 rounded text-[10px] bg-blue-500/20 text-blue-400 font-sans">Создатель</span>
-            </div>
-            <span class="text-[11px] text-emerald-400 font-medium">Активен</span>
+            <span class="font-mono font-bold text-zinc-300">1640182648 (Друг)</span>
+            <span class="text-emerald-400 text-[11px]">● Активен</span>
           </div>
-          <div class="text-[11px] tg-hint">
-            Фильтр: <b>Все бренды (82)</b> • <b>Все цены</b> • <b>Все размеры</b>
-          </div>
-          <div class="flex gap-2 pt-1">
-            <button onclick="triggerAction('toggle_pause', {chat_id: 6004332597})" class="flex-1 py-1.5 rounded-lg text-xs font-medium bg-zinc-700/70 hover:bg-zinc-600 transition-colors">
-              ⏸ Пауза
-            </button>
-          </div>
-        </div>
-
-        <!-- User Card 2 -->
-        <div class="p-3 rounded-xl tg-card border border-zinc-700/40 space-y-2">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span class="font-mono text-xs font-bold">1640182648</span>
-              <span class="px-1.5 py-0.2 rounded text-[10px] bg-zinc-600 text-zinc-300 font-sans">Друг</span>
-            </div>
-            <span class="text-[11px] text-emerald-400 font-medium">Активен</span>
-          </div>
-          <div class="text-[11px] tg-hint">
-            Фильтр: <b>Все бренды</b> • <b>500 – 1000 zł</b> • <b>Все размеры</b>
-          </div>
-          <div class="flex gap-2 pt-1">
-            <button onclick="triggerAction('toggle_pause', {chat_id: 1640182648})" class="flex-1 py-1.5 rounded-lg text-xs font-medium bg-zinc-700/70 hover:bg-zinc-600 transition-colors">
-              ⏸ Пауза
-            </button>
-          </div>
+          <div class="text-[11px] text-zinc-400">Фильтр: <b>Все бренды</b> • <b>500-1000 zł</b></div>
+          <button onclick="triggerAdminAction('toggle_pause', {chat_id: 1640182648})" class="w-full py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-[11px]">
+            ⏸ Переключить статус паузы
+          </button>
         </div>
       </div>
 
-      <!-- Broadcast Button -->
-      <button onclick="promptBroadcast()" class="w-full py-2.5 rounded-xl text-xs font-semibold tg-button flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-md">
+      <button onclick="promptBroadcastMsg()" class="w-full py-2.5 rounded-xl text-xs font-semibold accent-btn flex items-center justify-center gap-2 active:scale-95 transition-transform">
         <span>📢</span> Отправить рассылку всем клиентам
       </button>
     </section>
 
-    <!-- TAB 2: Roadmap -->
+    <!-- ================================================================= -->
+    <!-- TAB 5: ROADMAP & ИНФО -->
+    <!-- ================================================================= -->
     <section id="view-roadmap" class="hidden space-y-3">
-      <div class="p-3 rounded-xl tg-card border border-zinc-700/40">
-        <h2 class="text-xs font-bold">Roadmap развития @Shmotzema_bot</h2>
-        <p class="text-[11px] tg-hint mt-0.5">Публичные этапы разработки и ключевые функции</p>
+      <div class="p-3.5 rounded-2xl tg-card border border-zinc-800/80 space-y-2">
+        <h2 class="text-xs font-bold text-zinc-200">Roadmap развития @Shmotzema_bot</h2>
+        <p class="text-[11px] text-zinc-400 leading-snug">
+          Все этапы развития проекта от мониторинга до SaaS-платформы.
+        </p>
       </div>
 
-      <!-- Stage: In Progress -->
       <div class="p-3 rounded-xl tg-card border border-amber-500/30 space-y-2">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> В разработке
-          </span>
-          <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400">v2.0</span>
+          <span class="text-xs font-bold text-amber-400">🚀 В разработке (v2.0)</span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400">Active</span>
         </div>
-        <div class="space-y-1.5 text-xs">
-          <div class="p-2 rounded-lg bg-zinc-800/80">
-            <div class="font-medium">Telegram WebApp интерфейс</div>
-            <div class="text-[11px] tg-hint">Визуальное окно управления фильтрами и CRM без внешних сайтов.</div>
-          </div>
-          <div class="p-2 rounded-lg bg-zinc-800/80">
-            <div class="font-medium">Пул прокси для масштабирования</div>
-            <div class="text-[11px] tg-hint">Подготовка архитектуры под 1000+ брендов и 5000 пользователей.</div>
-          </div>
+        <div class="text-xs text-zinc-300 space-y-1">
+          <div>• Интерактивный Telegram WebApp конструктор фильтров</div>
+          <div>• Калькулятор маржинальности перепродажи (Resell AI)</div>
+          <div>• Визуальная лента свежих находок и вишлист</div>
         </div>
       </div>
 
-      <!-- Stage: Planned -->
-      <div class="p-3 rounded-xl tg-card border border-blue-500/30 space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-blue-400">💡 Запланировано (Backlog)</span>
-          <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">Q1 2027</span>
-        </div>
-        <div class="space-y-1.5 text-xs">
-          <div class="p-2 rounded-lg bg-zinc-800/80">
-            <div class="font-medium">SaaS Модель и подписки</div>
-            <div class="text-[11px] tg-hint">Тарифы Free (до 3 брендов) и Pro (неограниченно + мгновенные алерты).</div>
-          </div>
-          <div class="p-2 rounded-lg bg-zinc-800/80">
-            <div class="font-medium">Resell AI калькулятор</div>
-            <div class="text-[11px] tg-hint">Оценка рыночной стоимости вещи и прогнозирование маржинальности.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 3: Changelog -->
-    <section id="view-changelog" class="hidden space-y-3">
-      <div class="p-3 rounded-xl tg-card border border-zinc-700/40">
-        <h2 class="text-xs font-bold">История релизов (Changelog)</h2>
-        <p class="text-[11px] tg-hint mt-0.5">Все обновления бота от первой версии до сегодня</p>
-      </div>
-
-      <div class="space-y-2.5 text-xs">
-        <div class="p-3 rounded-xl tg-card border border-zinc-700/40 space-y-1">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-emerald-400">Версия 1.4</span>
-            <span class="text-[10px] tg-hint">17.11.2026</span>
-          </div>
-          <div class="font-medium">Отказоустойчивый авто-рефреш Vinted</div>
-          <ul class="text-[11px] tg-hint list-disc list-inside space-y-0.5">
-            <li>Превентивное обновление OAuth JWT каждые 15 минут.</li>
-            <li>3 попытки ретрая со свежими TLS-отпечатками Chrome.</li>
-            <li>Пользователи больше не видят предупреждений об истекших куки.</li>
-          </ul>
-        </div>
-
-        <div class="p-3 rounded-xl tg-card border border-zinc-700/40 space-y-1">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-blue-400">Версия 1.3</span>
-            <span class="text-[10px] tg-hint">15.11.2026</span>
-          </div>
-          <div class="font-medium">Управление потоком и эстетика</div>
-          <ul class="text-[11px] tg-hint list-disc list-inside space-y-0.5">
-            <li>Кнопки паузы и возобновления в постоянном меню.</li>
-            <li>Эмодзи по категориям (💎 Люкс, ✨ Премиум, 👟 Стритвир, 🌿 Локал, 🕰️ Винтаж).</li>
-          </ul>
-        </div>
-
-        <div class="p-3 rounded-xl tg-card border border-zinc-700/40 space-y-1">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-purple-400">Версия 1.2</span>
-            <span class="text-[10px] tg-hint">10.11.2026</span>
-          </div>
-          <div class="font-medium">Персонализированная фильтрация</div>
-          <ul class="text-[11px] tg-hint list-disc list-inside space-y-0.5">
-            <li>82 целевых бренда с точечным включением/выключением.</li>
-            <li>Настройка ценового коридора и размеров одежды/обуви.</li>
-          </ul>
+      <div class="p-3 rounded-xl tg-card border border-zinc-800/80 space-y-2">
+        <div class="text-xs font-bold text-zinc-400">💡 Запланировано (Backlog)</div>
+        <div class="text-xs text-zinc-400 space-y-1">
+          <div>• Автоматическая оплата подписки (Telegram Stars)</div>
+          <div>• Пул резидентских прокси под 1000+ брендов</div>
+          <div>• Интеграция автовыкупа через Vinted API</div>
         </div>
       </div>
     </section>
@@ -234,73 +356,439 @@
   </div>
 
   <script>
+    // --- 1. Telegram SDK Initialization ---
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
       tg.expand();
+      if (tg.enableClosingConfirmation) tg.enableClosingConfirmation();
     }
 
     const ADMIN_IDS = [6004332597];
     const currentUser = tg?.initDataUnsafe?.user;
 
-    // Определяем пользователя
-    const badge = document.getElementById('userRoleBadge');
-    const crmTab = document.getElementById('tab-crm');
+    // --- 2. Data Structures ---
+    const BRANDS_DATA = {
+      "Люкс (Luxury)": [
+        "Chanel", "Louis Vuitton", "Hermes", "Prada", "Gucci", "Dior",
+        "Balenciaga", "Celine", "Saint Laurent", "Bottega Veneta", "Fendi",
+        "Loewe", "Miu Miu", "Burberry", "Valentino", "Cartier", "Tiffany"
+      ],
+      "Премиум (Contemporary)": [
+        "Acne Studios", "Toteme", "The Row", "Lemaire", "Jacquemus",
+        "Isabel Marant", "Maison Margiela", "Ganni", "Nanushka", "Khaite",
+        "Jil Sander", "Dries Van Noten", "Rick Owens", "Marni", "A.P.C.",
+        "Sandro", "Maje", "Max Mara", "COS", "Arket", "Massimo Dutti"
+      ],
+      "Стритвир и аутдор": [
+        "Supreme", "Palace", "Stussy", "Stone Island", "C.P. Company",
+        "Carhartt", "Dickies", "Nike", "Adidas", "New Balance", "Salomon",
+        "Arcteryx", "The North Face", "Patagonia", "Bape", "Off-White",
+        "Cav Empt", "Human Made"
+      ],
+      "Локал-бренды": [
+        "12 Storeez", "Ushatava", "Lime", "Zarina", "Befree", "Love Republic",
+        "Gate31", "Namelazz", "My812", "Monochrome", "Sela", "Lichi", "Studio 29"
+      ],
+      "Архив и винтаж": [
+        "Yohji Yamamoto", "Comme des Garcons", "Issey Miyake",
+        "Vivienne Westwood", "Jean Paul Gaultier", "Diesel", "Miss Sixty",
+        "Ed Hardy", "True Religion", "Evisu", "Levis", "Wrangler", "Lee"
+      ]
+    };
 
-    if (currentUser) {
-      const isAdmin = ADMIN_IDS.includes(currentUser.id);
-      if (isAdmin) {
-        badge.innerHTML = `Администратор: <span class="font-mono">${currentUser.first_name || currentUser.id}</span>`;
+    const ALL_BRANDS = [];
+    Object.values(BRANDS_DATA).forEach(list => ALL_BRANDS.push(...list));
+
+    const CLOTHES_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+    const SHOES_SIZES = ["40", "41", "42", "43", "44", "45"];
+
+    // Demo Feed Items
+    const DEMO_ITEMS = [
+      {
+        id: "1",
+        title: "Louis Vuitton Monogram Pochette Bag",
+        brand: "Louis Vuitton",
+        cat: "Люкс",
+        price: 340,
+        origPrice: 950,
+        size: "One Size",
+        img: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80",
+        url: "https://www.vinted.pl/"
+      },
+      {
+        id: "2",
+        title: "Arc'teryx Beta LT Jacket Gore-Tex Black",
+        brand: "Arcteryx",
+        cat: "Стритвир",
+        price: 490,
+        origPrice: 1200,
+        size: "L",
+        img: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
+        url: "https://www.vinted.pl/"
+      },
+      {
+        id: "3",
+        title: "Stone Island Vintage Sweatshirt Badge",
+        brand: "Stone Island",
+        cat: "Стритвир",
+        price: 280,
+        origPrice: 700,
+        size: "M",
+        img: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400&q=80",
+        url: "https://www.vinted.pl/"
+      },
+      {
+        id: "4",
+        title: "Prada Chocolate Brushed Leather Loafers",
+        brand: "Prada",
+        cat: "Люкс",
+        price: 620,
+        origPrice: 1600,
+        size: "42",
+        img: "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=400&q=80",
+        url: "https://www.vinted.pl/"
+      }
+    ];
+
+    // User State
+    let selectedBrands = new Set(ALL_BRANDS);
+    let selectedSizes = new Set();
+    let currentMinPrice = null;
+    let currentMaxPrice = 1000;
+    let currentBrandCategory = 'ALL';
+    let favorites = JSON.parse(localStorage.getItem('shmotzema_favs') || '[]');
+    let currentCalcMultiplier = 2.2;
+
+    // --- 3. DOM Elements Initialization ---
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check user role
+      const userBadge = document.getElementById('userStatusLabel');
+      const crmTab = document.getElementById('tab-crm');
+
+      if (currentUser) {
+        const isAdmin = ADMIN_IDS.includes(currentUser.id);
+        if (isAdmin) {
+          userBadge.innerText = `Админ: ${currentUser.first_name || currentUser.id}`;
+          crmTab.classList.remove('hidden');
+        } else {
+          userBadge.innerText = `Клиент: ${currentUser.first_name || currentUser.id}`;
+        }
       } else {
-        badge.innerHTML = `Пользователь: <span class="font-mono">${currentUser.first_name || currentUser.id}</span>`;
-        // Если обычный пользователь — скрываем вкладку CRM
-        crmTab.style.display = 'none';
-        switchTab('roadmap');
+        userBadge.innerText = "Предпросмотр";
+        crmTab.classList.remove('hidden'); // allow preview
       }
-    } else {
-      badge.innerHTML = `Режим предпросмотра (Web Preview)`;
-    }
 
+      renderSizes();
+      renderBrandPills();
+      renderFeedCards('all');
+      calculateResellProfit();
+    });
+
+    // --- 4. Tab Navigation ---
     function switchTab(tabId) {
-      if (tg?.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('light');
-      }
-      const views = ['crm', 'roadmap', 'changelog'];
-      views.forEach(v => {
-        document.getElementById('view-' + v).classList.add('hidden');
-        const btn = document.getElementById('tab-' + v);
-        btn.classList.remove('bg-zinc-700/60', 'text-white', 'font-semibold');
-        btn.classList.add('text-zinc-400');
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+
+      const tabs = ['filters', 'feed', 'calc', 'crm', 'roadmap'];
+      tabs.forEach(t => {
+        const viewEl = document.getElementById('view-' + t);
+        const btnEl = document.getElementById('tab-' + t);
+        if (viewEl) viewEl.classList.add('hidden');
+        if (btnEl) {
+          btnEl.classList.remove('bg-blue-600', 'text-white', 'font-semibold');
+          btnEl.classList.add('text-zinc-400');
+        }
       });
 
-      document.getElementById('view-' + tabId).classList.remove('hidden');
-      const activeBtn = document.getElementById('tab-' + tabId);
-      activeBtn.classList.add('bg-zinc-700/60', 'text-white', 'font-semibold');
-      activeBtn.classList.remove('text-zinc-400');
+      const targetView = document.getElementById('view-' + tabId);
+      const targetBtn = document.getElementById('tab-' + tabId);
+      if (targetView) targetView.classList.remove('hidden');
+      if (targetBtn) {
+        targetBtn.classList.add('bg-blue-600', 'text-white', 'font-semibold');
+        targetBtn.classList.remove('text-zinc-400');
+      }
     }
 
-    function triggerAction(actionType, payload) {
-      if (tg?.HapticFeedback) {
-        tg.HapticFeedback.notificationOccurred('success');
+    // --- 5. Filters Logic ---
+    function renderSizes() {
+      const clothesEl = document.getElementById('clothesSizesContainer');
+      const shoesEl = document.getElementById('shoesSizesContainer');
+
+      clothesEl.innerHTML = CLOTHES_SIZES.map(s => {
+        const active = selectedSizes.has(s);
+        return `<button onclick="toggleSize('${s}')" class="size-pill px-3 py-1.5 rounded-lg text-xs font-semibold ${active ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}">${s}</button>`;
+      }).join('');
+
+      shoesEl.innerHTML = SHOES_SIZES.map(s => {
+        const active = selectedSizes.has(s);
+        return `<button onclick="toggleSize('${s}')" class="size-pill px-3 py-1.5 rounded-lg text-xs font-semibold ${active ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}">${s}</button>`;
+      }).join('');
+    }
+
+    function toggleSize(size) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      if (selectedSizes.has(size)) {
+        selectedSizes.delete(size);
+      } else {
+        selectedSizes.add(size);
+      }
+      renderSizes();
+    }
+
+    function resetSizes() {
+      selectedSizes.clear();
+      renderSizes();
+    }
+
+    function renderBrandPills() {
+      const cloud = document.getElementById('brandsPillCloud');
+      const query = (document.getElementById('brandSearch')?.value || '').toLowerCase();
+
+      let brandsToShow = [];
+      if (currentBrandCategory === 'ALL') {
+        brandsToShow = ALL_BRANDS;
+      } else {
+        brandsToShow = BRANDS_DATA[currentBrandCategory] || [];
       }
 
-      const data = {
-        action: actionType,
-        ...payload,
-        timestamp: Date.now()
+      if (query) {
+        brandsToShow = brandsToShow.filter(b => b.toLowerCase().includes(query));
+      }
+
+      cloud.innerHTML = brandsToShow.map(b => {
+        const selected = selectedBrands.has(b);
+        return `<button onclick="toggleBrand('${b}')" class="px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${selected ? 'bg-blue-600/90 text-white shadow-sm' : 'bg-zinc-800/80 text-zinc-400 hover:text-zinc-200'}">
+          ${selected ? '✓ ' : '+ '}${b}
+        </button>`;
+      }).join('');
+
+      document.getElementById('brandsCountBadge').innerText = `${selectedBrands.size} выбрано`;
+    }
+
+    function toggleBrand(brand) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      if (selectedBrands.has(brand)) {
+        selectedBrands.delete(brand);
+      } else {
+        selectedBrands.add(brand);
+      }
+      renderBrandPills();
+    }
+
+    function toggleAllBrands(enable) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      if (enable) {
+        selectedBrands = new Set(ALL_BRANDS);
+      } else {
+        selectedBrands.clear();
+      }
+      renderBrandPills();
+    }
+
+    function selectBrandCat(cat) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      currentBrandCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.innerText.includes(cat) || (cat === 'ALL' && btn.innerText.includes('Все'))) {
+          btn.className = "cat-pill px-2.5 py-1 rounded-full bg-blue-600 text-white whitespace-nowrap";
+        } else {
+          btn.className = "cat-pill px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 hover:text-white whitespace-nowrap";
+        }
+      });
+      renderBrandPills();
+    }
+
+    function filterBrandsSearch() {
+      renderBrandPills();
+    }
+
+    function updatePriceSlider(val) {
+      currentMaxPrice = parseInt(val);
+      const display = document.getElementById('priceDisplay');
+      const readout = document.getElementById('sliderValue');
+
+      if (currentMaxPrice >= 3000) {
+        currentMaxPrice = null;
+        display.innerText = "Любая цена (без лимита)";
+        readout.innerText = "Без лимита";
+      } else {
+        display.innerText = `до ${currentMaxPrice} zł`;
+        readout.innerText = `${currentMaxPrice} zł`;
+      }
+    }
+
+    function setPricePreset(minP, maxP) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      currentMinPrice = minP;
+      currentMaxPrice = maxP;
+
+      const slider = document.getElementById('priceMaxSlider');
+      if (maxP === null) {
+        slider.value = 3000;
+        updatePriceSlider(3000);
+      } else {
+        slider.value = maxP;
+        updatePriceSlider(maxP);
+      }
+    }
+
+    function applyFiltersToBot() {
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+
+      const brandsArray = Array.from(selectedBrands);
+      const sizesArray = Array.from(selectedSizes);
+
+      const payload = {
+        action: "save_filters",
+        min_price: currentMinPrice,
+        max_price: currentMaxPrice,
+        brands: brandsArray.length === ALL_BRANDS.length ? [] : (brandsArray.length === 0 ? ["__NONE__"] : brandsArray),
+        sizes: sizesArray
       };
 
       if (tg && tg.sendData) {
-        tg.sendData(JSON.stringify(data));
+        tg.sendData(JSON.stringify(payload));
       } else {
-        alert("Команда выполнена: " + actionType + " " + JSON.stringify(payload));
+        alert("Настройки применены:\n" + JSON.stringify(payload, null, 2));
       }
     }
 
-    function promptBroadcast() {
-      const msg = prompt("Введите текст сообщения для рассылки всем подписчикам:");
+    // --- 6. Live Feed & Favorites ---
+    function renderFeedCards(mode = 'all') {
+      const container = document.getElementById('feedCardsContainer');
+      const favBadge = document.getElementById('favCount');
+      favBadge.innerText = favorites.length;
+
+      let items = DEMO_ITEMS;
+      if (mode === 'fav') {
+        items = DEMO_ITEMS.filter(it => favorites.includes(it.id));
+      }
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="col-span-2 py-8 text-center text-xs text-zinc-500">
+          В избранном пока ничего нет.<br>Нажмите на сердечко ❤️ у понравившейся вещи!
+        </div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(it => {
+        const isFav = favorites.includes(it.id);
+        const discount = Math.round((1 - it.price / it.origPrice) * 100);
+
+        return `
+          <div class="rounded-xl tg-card border border-zinc-800/80 overflow-hidden flex flex-col justify-between group">
+            <div class="relative aspect-square bg-zinc-900 overflow-hidden">
+              <img src="${it.img}" alt="${it.title}" class="w-full h-full object-cover">
+              <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold bg-black/70 text-emerald-400 backdrop-blur-sm">
+                -${discount}%
+              </span>
+              <button onclick="toggleFavorite('${it.id}')" class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-xs active:scale-90 transition-transform">
+                ${isFav ? '❤️' : '🤍'}
+              </button>
+            </div>
+            <div class="p-2.5 space-y-1.5">
+              <div class="text-[10px] text-zinc-400 uppercase font-semibold">${it.brand} • ${it.size}</div>
+              <h3 class="text-xs font-medium leading-snug line-clamp-2 text-zinc-200">${it.title}</h3>
+              <div class="flex items-baseline gap-1.5 pt-0.5">
+                <span class="text-sm font-bold font-mono text-emerald-400">${it.price} zł</span>
+                <span class="text-[10px] text-zinc-500 line-through">${it.origPrice} zł</span>
+              </div>
+              <a href="${it.url}" target="_blank" class="block w-full py-1.5 text-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-[11px] font-medium text-blue-400 transition-colors">
+                Купить на Vinted ↗
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleFavorite(itemId) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      if (favorites.includes(itemId)) {
+        favorites = favorites.filter(id => id !== itemId);
+      } else {
+        favorites.push(itemId);
+      }
+      localStorage.setItem('shmotzema_favs', JSON.stringify(favorites));
+      renderFeedCards(document.getElementById('feed-mode-fav').classList.contains('font-bold') ? 'fav' : 'all');
+    }
+
+    function switchFeedMode(mode) {
+      const allBtn = document.getElementById('feed-mode-all');
+      const favBtn = document.getElementById('feed-mode-fav');
+
+      if (mode === 'all') {
+        allBtn.className = "font-bold text-white border-b-2 border-blue-500 pb-0.5";
+        favBtn.className = "text-zinc-400 hover:text-white pb-0.5";
+      } else {
+        favBtn.className = "font-bold text-white border-b-2 border-blue-500 pb-0.5";
+        allBtn.className = "text-zinc-400 hover:text-white pb-0.5";
+      }
+      renderFeedCards(mode);
+    }
+
+    // --- 7. Resell AI Calculator ---
+    function setCalcMultiplier(mult) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      currentCalcMultiplier = mult;
+      document.querySelectorAll('.calc-mult-btn').forEach(btn => {
+        if (btn.innerText.includes(mult)) {
+          btn.className = "calc-mult-btn py-1.5 rounded-lg bg-blue-600 text-[11px] text-white font-bold";
+        } else {
+          btn.className = "calc-mult-btn py-1.5 rounded-lg bg-zinc-800 text-[11px] text-zinc-300";
+        }
+      });
+      calculateResellProfit();
+    }
+
+    function calculateResellProfit() {
+      const buyPrice = parseFloat(document.getElementById('calcBuyPrice').value) || 0;
+      const platform = document.getElementById('calcPlatform').value;
+
+      let feeRate = 0;
+      if (platform === 'grailed') feeRate = 0.09 + 0.035; // 9% fee + 3.5% payment
+      else if (platform === 'avito') feeRate = 0.07;
+      else if (platform === 'poizon') feeRate = 0.12;
+      else if (platform === 'direct') feeRate = 0.0;
+
+      const salePrice = Math.round(buyPrice * currentCalcMultiplier);
+      const feeAmount = Math.round(salePrice * feeRate);
+      const netProfit = Math.round(salePrice - buyPrice - feeAmount);
+      const roi = buyPrice > 0 ? Math.round((netProfit / buyPrice) * 100) : 0;
+
+      document.getElementById('calcSalePrice').innerText = `${salePrice} zł`;
+      document.getElementById('calcFeeAmount').innerText = feeAmount > 0 ? `- ${feeAmount} zł` : "0 zł (Без комиссии)";
+      document.getElementById('calcNetProfit').innerText = `${netProfit >= 0 ? '+' : ''}${netProfit} zł`;
+      document.getElementById('calcRoiPercent').innerText = `${roi}%`;
+
+      const badge = document.getElementById('calcVerdictBadge');
+      if (roi >= 90) {
+        badge.className = "p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-center text-xs font-bold text-emerald-400 mt-2";
+        badge.innerText = "🔥 Отличная маржа! Топовый дроп для выкупа";
+      } else if (roi >= 40) {
+        badge.className = "p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-center text-xs font-bold text-blue-400 mt-2";
+        badge.innerText = "👍 Хороший профит с надежной ликвидностью";
+      } else {
+        badge.className = "p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-center text-xs font-bold text-amber-400 mt-2";
+        badge.innerText = "⚠️ Низкая маржа — стоит брать только под себя";
+      }
+    }
+
+    // --- 8. Admin Controls ---
+    function triggerAdminAction(action, payload) {
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      const data = { action, ...payload };
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify(data));
+      } else {
+        alert("Админ-действие: " + JSON.stringify(data));
+      }
+    }
+
+    function promptBroadcastMsg() {
+      const msg = prompt("Введите текст сообщения для рассылки всем подписчикам бота:");
       if (msg && msg.trim()) {
-        triggerAction('broadcast', { text: msg.trim() });
+        triggerAdminAction('broadcast', { text: msg.trim() });
       }
     }
   </script>
