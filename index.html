@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Shmotzema Admin & CRM</title>
+  <!-- Telegram WebApp JS SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: var(--tg-theme-bg-color, #18181b);
+      color: var(--tg-theme-text-color, #fafafa);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tg-card {
+      background-color: var(--tg-theme-secondary-bg-color, #27272a);
+    }
+    .tg-button {
+      background-color: var(--tg-theme-button-color, #3b82f6);
+      color: var(--tg-theme-button-text-color, #ffffff);
+    }
+    .tg-hint {
+      color: var(--tg-theme-hint-color, #a1a1aa);
+    }
+  </style>
+</head>
+<body class="p-4 pb-12 select-none">
+  <div class="max-w-md mx-auto space-y-4">
+
+    <!-- Top Header -->
+    <header class="flex items-center justify-between pb-3 border-b border-zinc-700/50">
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl">⚡</span>
+        <div>
+          <h1 class="text-base font-bold leading-tight">Shmotzema Core</h1>
+          <p id="userRoleBadge" class="text-[11px] tg-hint">Подключение к Telegram...</p>
+        </div>
+      </div>
+      <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+        v1.4 Live
+      </span>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="grid grid-cols-3 gap-1.5 p-1 rounded-xl tg-card text-xs font-medium">
+      <button onclick="switchTab('crm')" id="tab-crm" class="py-2 rounded-lg bg-zinc-700/60 text-white font-semibold transition-all">
+        👥 CRM
+      </button>
+      <button onclick="switchTab('roadmap')" id="tab-roadmap" class="py-2 rounded-lg text-zinc-400 hover:text-white transition-all">
+        🗺️ Roadmap
+      </button>
+      <button onclick="switchTab('changelog')" id="tab-changelog" class="py-2 rounded-lg text-zinc-400 hover:text-white transition-all">
+        📜 Релизы
+      </button>
+    </nav>
+
+    <!-- TAB 1: CRM & Users (Admin Only) -->
+    <section id="view-crm" class="space-y-3">
+      <!-- KPI Cards -->
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="p-3 rounded-xl tg-card border border-zinc-700/40">
+          <div class="tg-hint text-[11px]">Всего клиентов</div>
+          <div class="text-xl font-bold mt-0.5">2 чел.</div>
+          <div class="text-[10px] text-emerald-400 mt-0.5">● 100% активны</div>
+        </div>
+        <div class="p-3 rounded-xl tg-card border border-zinc-700/40">
+          <div class="tg-hint text-[11px]">База товаров</div>
+          <div class="text-xl font-bold mt-0.5">68,724</div>
+          <div class="text-[10px] tg-hint mt-0.5">seen_items (SQLite)</div>
+        </div>
+      </div>
+
+      <!-- Quick Action: Session & Refresh -->
+      <div class="p-3 rounded-xl tg-card border border-zinc-700/40 flex items-center justify-between">
+        <div>
+          <div class="text-xs font-semibold">Сессия Vinted.pl</div>
+          <div class="text-[11px] text-emerald-400">Авто-ротация каждые 15 мин</div>
+        </div>
+        <button onclick="triggerAction('refresh_session', {})" class="px-3 py-1.5 rounded-lg text-xs font-medium tg-button transition-transform active:scale-95">
+          🔄 Обновить
+        </button>
+      </div>
+
+      <!-- User List -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between text-xs font-semibold px-1">
+          <span>Подписчики бота</span>
+          <span class="tg-hint text-[11px]">Нажмите для действий</span>
+        </div>
+
+        <!-- User Card 1 -->
+        <div class="p-3 rounded-xl tg-card border border-zinc-700/40 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span class="font-mono text-xs font-bold">6004332597</span>
+              <span class="px-1.5 py-0.2 rounded text-[10px] bg-blue-500/20 text-blue-400 font-sans">Создатель</span>
+            </div>
+            <span class="text-[11px] text-emerald-400 font-medium">Активен</span>
+          </div>
+          <div class="text-[11px] tg-hint">
+            Фильтр: <b>Все бренды (82)</b> • <b>Все цены</b> • <b>Все размеры</b>
+          </div>
+          <div class="flex gap-2 pt-1">
+            <button onclick="triggerAction('toggle_pause', {chat_id: 6004332597})" class="flex-1 py-1.5 rounded-lg text-xs font-medium bg-zinc-700/70 hover:bg-zinc-600 transition-colors">
+              ⏸ Пауза
+            </button>
+          </div>
+        </div>
+
+        <!-- User Card 2 -->
+        <div class="p-3 rounded-xl tg-card border border-zinc-700/40 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span class="font-mono text-xs font-bold">1640182648</span>
+              <span class="px-1.5 py-0.2 rounded text-[10px] bg-zinc-600 text-zinc-300 font-sans">Друг</span>
+            </div>
+            <span class="text-[11px] text-emerald-400 font-medium">Активен</span>
+          </div>
+          <div class="text-[11px] tg-hint">
+            Фильтр: <b>Все бренды</b> • <b>500 – 1000 zł</b> • <b>Все размеры</b>
+          </div>
+          <div class="flex gap-2 pt-1">
+            <button onclick="triggerAction('toggle_pause', {chat_id: 1640182648})" class="flex-1 py-1.5 rounded-lg text-xs font-medium bg-zinc-700/70 hover:bg-zinc-600 transition-colors">
+              ⏸ Пауза
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Broadcast Button -->
+      <button onclick="promptBroadcast()" class="w-full py-2.5 rounded-xl text-xs font-semibold tg-button flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-md">
+        <span>📢</span> Отправить рассылку всем клиентам
+      </button>
+    </section>
+
+    <!-- TAB 2: Roadmap -->
+    <section id="view-roadmap" class="hidden space-y-3">
+      <div class="p-3 rounded-xl tg-card border border-zinc-700/40">
+        <h2 class="text-xs font-bold">Roadmap развития @Shmotzema_bot</h2>
+        <p class="text-[11px] tg-hint mt-0.5">Публичные этапы разработки и ключевые функции</p>
+      </div>
+
+      <!-- Stage: In Progress -->
+      <div class="p-3 rounded-xl tg-card border border-amber-500/30 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> В разработке
+          </span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400">v2.0</span>
+        </div>
+        <div class="space-y-1.5 text-xs">
+          <div class="p-2 rounded-lg bg-zinc-800/80">
+            <div class="font-medium">Telegram WebApp интерфейс</div>
+            <div class="text-[11px] tg-hint">Визуальное окно управления фильтрами и CRM без внешних сайтов.</div>
+          </div>
+          <div class="p-2 rounded-lg bg-zinc-800/80">
+            <div class="font-medium">Пул прокси для масштабирования</div>
+            <div class="text-[11px] tg-hint">Подготовка архитектуры под 1000+ брендов и 5000 пользователей.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage: Planned -->
+      <div class="p-3 rounded-xl tg-card border border-blue-500/30 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-blue-400">💡 Запланировано (Backlog)</span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">Q1 2027</span>
+        </div>
+        <div class="space-y-1.5 text-xs">
+          <div class="p-2 rounded-lg bg-zinc-800/80">
+            <div class="font-medium">SaaS Модель и подписки</div>
+            <div class="text-[11px] tg-hint">Тарифы Free (до 3 брендов) и Pro (неограниченно + мгновенные алерты).</div>
+          </div>
+          <div class="p-2 rounded-lg bg-zinc-800/80">
+            <div class="font-medium">Resell AI калькулятор</div>
+            <div class="text-[11px] tg-hint">Оценка рыночной стоимости вещи и прогнозирование маржинальности.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Changelog -->
+    <section id="view-changelog" class="hidden space-y-3">
+      <div class="p-3 rounded-xl tg-card border border-zinc-700/40">
+        <h2 class="text-xs font-bold">История релизов (Changelog)</h2>
+        <p class="text-[11px] tg-hint mt-0.5">Все обновления бота от первой версии до сегодня</p>
+      </div>
+
+      <div class="space-y-2.5 text-xs">
+        <div class="p-3 rounded-xl tg-card border border-zinc-700/40 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-emerald-400">Версия 1.4</span>
+            <span class="text-[10px] tg-hint">17.11.2026</span>
+          </div>
+          <div class="font-medium">Отказоустойчивый авто-рефреш Vinted</div>
+          <ul class="text-[11px] tg-hint list-disc list-inside space-y-0.5">
+            <li>Превентивное обновление OAuth JWT каждые 15 минут.</li>
+            <li>3 попытки ретрая со свежими TLS-отпечатками Chrome.</li>
+            <li>Пользователи больше не видят предупреждений об истекших куки.</li>
+          </ul>
+        </div>
+
+        <div class="p-3 rounded-xl tg-card border border-zinc-700/40 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-blue-400">Версия 1.3</span>
+            <span class="text-[10px] tg-hint">15.11.2026</span>
+          </div>
+          <div class="font-medium">Управление потоком и эстетика</div>
+          <ul class="text-[11px] tg-hint list-disc list-inside space-y-0.5">
+            <li>Кнопки паузы и возобновления в постоянном меню.</li>
+            <li>Эмодзи по категориям (💎 Люкс, ✨ Премиум, 👟 Стритвир, 🌿 Локал, 🕰️ Винтаж).</li>
+          </ul>
+        </div>
+
+        <div class="p-3 rounded-xl tg-card border border-zinc-700/40 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-purple-400">Версия 1.2</span>
+            <span class="text-[10px] tg-hint">10.11.2026</span>
+          </div>
+          <div class="font-medium">Персонализированная фильтрация</div>
+          <ul class="text-[11px] tg-hint list-disc list-inside space-y-0.5">
+            <li>82 целевых бренда с точечным включением/выключением.</li>
+            <li>Настройка ценового коридора и размеров одежды/обуви.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+    const ADMIN_IDS = [6004332597];
+    const currentUser = tg?.initDataUnsafe?.user;
+
+    // Определяем пользователя
+    const badge = document.getElementById('userRoleBadge');
+    const crmTab = document.getElementById('tab-crm');
+
+    if (currentUser) {
+      const isAdmin = ADMIN_IDS.includes(currentUser.id);
+      if (isAdmin) {
+        badge.innerHTML = `Администратор: <span class="font-mono">${currentUser.first_name || currentUser.id}</span>`;
+      } else {
+        badge.innerHTML = `Пользователь: <span class="font-mono">${currentUser.first_name || currentUser.id}</span>`;
+        // Если обычный пользователь — скрываем вкладку CRM
+        crmTab.style.display = 'none';
+        switchTab('roadmap');
+      }
+    } else {
+      badge.innerHTML = `Режим предпросмотра (Web Preview)`;
+    }
+
+    function switchTab(tabId) {
+      if (tg?.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred('light');
+      }
+      const views = ['crm', 'roadmap', 'changelog'];
+      views.forEach(v => {
+        document.getElementById('view-' + v).classList.add('hidden');
+        const btn = document.getElementById('tab-' + v);
+        btn.classList.remove('bg-zinc-700/60', 'text-white', 'font-semibold');
+        btn.classList.add('text-zinc-400');
+      });
+
+      document.getElementById('view-' + tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-' + tabId);
+      activeBtn.classList.add('bg-zinc-700/60', 'text-white', 'font-semibold');
+      activeBtn.classList.remove('text-zinc-400');
+    }
+
+    function triggerAction(actionType, payload) {
+      if (tg?.HapticFeedback) {
+        tg.HapticFeedback.notificationOccurred('success');
+      }
+
+      const data = {
+        action: actionType,
+        ...payload,
+        timestamp: Date.now()
+      };
+
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify(data));
+      } else {
+        alert("Команда выполнена: " + actionType + " " + JSON.stringify(payload));
+      }
+    }
+
+    function promptBroadcast() {
+      const msg = prompt("Введите текст сообщения для рассылки всем подписчикам:");
+      if (msg && msg.trim()) {
+        triggerAction('broadcast', { text: msg.trim() });
+      }
+    }
+  </script>
+</body>
+</html>
